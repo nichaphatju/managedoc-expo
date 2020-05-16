@@ -146,7 +146,7 @@ export class AssignDoc extends Component {
   );
  
   renderTab = ({ tab, isActive }) => (
-    <FullTab
+    <FullTab 
       isActive={isActive}
       key={tab.key}
       label={tab.label}
