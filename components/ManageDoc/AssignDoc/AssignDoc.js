@@ -9,9 +9,8 @@ import {
   TextInput,
   TouchableOpacity,
   Picker,
-  CheckBox,
 } from 'react-native';
-
+import {CheckBox} from "native-base"
 import {
   Header,
   LearnMoreLinks,
@@ -91,9 +90,9 @@ export class AssignDoc extends Component {
 
     this.state = {
       userList: [
-        {name: 'admin', position: 'Admin User'},
-        {name: 'employee', position: 'Employee User'},
-        {name: 'dev', position: 'Developer User'},
+        {name: 'admin', position: 'Admin User',key: 'admin'},
+        {name: 'employee', position: 'Employee User',key: 'user'},
+        {name: 'dev', position: 'Developer User',key: 'dev'},
       ],
       selectedUser: '',
       docTypes: [
@@ -115,7 +114,7 @@ export class AssignDoc extends Component {
 
   loadUsers() {
     return this.state.userList.map((user) => (
-      <Picker.Item label={user.name} value={user.name} />
+      <Picker.Item key={user.key} label={user.name} value={user.name} />
     ));
   }
 
@@ -125,8 +124,8 @@ export class AssignDoc extends Component {
     });
   };
 
-  handleCheckBoxChanged = (index) => {
-    var docTypes = this.state.docTypes;
+  handleCheckBoxChanged = (val) => {
+    // var docTypes = this.state.docTypes;
     // docTypes.forEach((ele, i) => {
     //   if (i == index) {
     //     // ele.value = !ele.value;
@@ -138,7 +137,7 @@ export class AssignDoc extends Component {
     //     ele.value = '';
     //   }
     // });
-    this.setState({docTypes: docTypes});
+    this.setState({selectedType: val});
   };
 
   renderIcon = (icon) => ({isActive}) => (
@@ -225,9 +224,11 @@ export class AssignDoc extends Component {
           <View style={styles.row}>
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>
-                <CheckBox
-                  value={this.state.docTypes[0].value}
-                  onValueChange={() => this.handleCheckBoxChanged(0)}
+                <CheckBox 
+                  color="#FF9900"
+                  checked={this.state.selectedType === 'A'}
+                  onPress={() => this.handleCheckBoxChanged('A')}
+                  style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดทราบ</Text>
               </View>
@@ -237,8 +238,9 @@ export class AssignDoc extends Component {
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
-                  value={this.state.docTypes[1].value}
-                  onValueChange={() => this.handleCheckBoxChanged(1)}
+                  color="#FF9900"
+                  checked={this.state.selectedType === 'B'}
+                  onPress={() => this.handleCheckBoxChanged('B')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดพิจารณา</Text>
@@ -249,8 +251,9 @@ export class AssignDoc extends Component {
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
-                  value={this.state.docTypes[2].value}
-                  onValueChange={() => this.handleCheckBoxChanged(2)}
+                  color="#FF9900"
+                  checked={this.state.selectedType === 'C'}
+                  onPress={() => this.handleCheckBoxChanged('C')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดพิจารณาอนุมัติ</Text>
@@ -261,8 +264,9 @@ export class AssignDoc extends Component {
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
-                  value={this.state.docTypes[3].value}
-                  onValueChange={() => this.handleCheckBoxChanged(3)}
+                  color="#FF9900"
+                  checked={this.state.selectedType === 'D'}
+                  onPress={() => this.handleCheckBoxChanged('D')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}>

@@ -93,9 +93,11 @@ const styles = StyleSheet.create({
     fontFamily: 'THSarabunNew Bold',
     fontSize: 28,
     marginTop: 5,
+    marginLeft:20,
     textAlign: 'left',
   },
   checkBoxChoice: {
+    marginTop: 5,
     fontFamily: 'THSarabunNew Bold',
     color: '#000',
     fontSize: 28,
