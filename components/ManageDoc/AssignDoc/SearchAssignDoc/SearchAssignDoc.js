@@ -135,7 +135,12 @@ export class SearchAssignDocScreen extends Component {
 const SearchAssignNavigator = createStackNavigator(
   {
     SearchAssignDoc: {screen: SearchAssignDocScreen},
-    AssignDoc: {screen: AssignDoc},
+    AssignDoc: {
+      screen: AssignDoc,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
     AcceptDoc: {screen: AcceptDoc},
   },
   {

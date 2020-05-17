@@ -9,9 +9,12 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
-    "@react-navigation/material-bottom-tabs": "^5.2.4",
+    "@react-navigation/bottom-tabs": "^5.4.5",
+    "@react-navigation/material-bottom-tabs": "^5.2.5",
+    "@react-navigation/native": "^5.4.0",
     "@use-expo/font": "^2.0.0",
     "expo": "~37.0.3",
+    "expo-document-picker": "~8.1.0",
     "expo-font": "^8.1.1",
     "firebase": "7.9.0",
     "native-base": "^2.13.12",

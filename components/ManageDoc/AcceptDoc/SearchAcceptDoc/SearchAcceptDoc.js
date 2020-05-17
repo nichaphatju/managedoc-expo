@@ -110,7 +110,11 @@ export class SearchAcceptDocScreen extends Component {
 const SearchAcceptNavigator = createStackNavigator(
   {
     SearchAcceptDoc: {screen: SearchAcceptDocScreen},
-    AcceptDoc: {screen: AcceptDoc},
+    AcceptDoc: {
+      screen: AcceptDoc,
+      navigationOptions: {
+      headerShown: false,
+    },},
   },
   {
     initialRouteName: 'SearchAcceptDoc',

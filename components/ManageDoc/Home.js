@@ -27,6 +27,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import SearchAssignDoc from './AssignDoc/SearchAssignDoc/SearchAssignDoc';
 import SearchAcceptDoc from './AcceptDoc/SearchAcceptDoc/SearchAcceptDoc';
+import ManageDoc from './ManageDoc';
 import * as Font from 'expo-font'
 import firebase from 'firebase';
 
@@ -62,12 +63,12 @@ class HomeScreen extends Component {
 
   assignPage = () => {
     console.log('assignPage');
-    this.props.navigation.navigate('SearchAssignDoc');
+    this.props.navigation.navigate('ManageDoc');
   };
 
   acceptPage = () => {
     console.log('acceptPage');
-    this.props.navigation.navigate('SearchAcceptDoc');
+    this.props.navigation.navigate('ManageDoc');
   };
 
   statusPage = () => {
@@ -184,6 +185,12 @@ const HomeNavigator = createStackNavigator(
         headerShown: false,
       },
     },
+    ManageDoc: {
+      screen: ManageDoc,
+      navigationOptions: {
+        headerShown: false,
+      },
+    }
   },
   {
     initialRouteName: 'Home',

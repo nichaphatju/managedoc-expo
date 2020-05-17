@@ -295,12 +295,12 @@ export class AssignDoc extends Component {
           {/* </label> */}
           </View>
         </View>
-        <BottomNavigation
+        {/* <BottomNavigation
           activeTab={this.state.activeTab}
           onTabPress={this.pressTab}
           renderTab={this.renderTab}
           tabs={this.tabs}
-        />
+        /> */}
         <View style={styles.bottomFooter} />
       </View>
     );
