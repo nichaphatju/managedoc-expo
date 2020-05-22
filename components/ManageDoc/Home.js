@@ -73,7 +73,7 @@ class HomeScreen extends Component {
 
   statusPage = () => {
     console.log('statusPage');
-    this.props.navigation.navigate('SearchAcceptDoc');
+    this.props.navigation.navigate('ManageDoc');
   };
 
   render() {

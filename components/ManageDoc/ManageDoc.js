@@ -5,6 +5,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import SearchAssignDoc from './AssignDoc/SearchAssignDoc/SearchAssignDoc';
 import SearchAcceptDoc from './AcceptDoc/SearchAcceptDoc/SearchAcceptDoc';
+import SearchStatusDoc from './StatusDoc/SearchStatusDoc';
+
+// function HomeScreen() {
+//   return (
+//     <HomeScreen />
+//   );
+// }
 
 function AssignDocScreen() {
   return (
@@ -15,6 +22,12 @@ function AssignDocScreen() {
 function AcceptDocScreen() {
   return (
     <SearchAcceptDoc />
+  );
+}
+
+function StatusDocScreen() {
+  return (
+    <SearchStatusDoc />
   );
 }
 
@@ -32,6 +45,8 @@ export default function ManageDoc() {
               iconName = focused ? 'send' : 'send';
             } else if (route.name === 'AcceptDoc') {
               iconName = focused ? 'assignment' : 'assignment';
+            } else if (route.name === 'StatusDoc') {
+              iconName = focused ? 'assignment' : 'assignment';
             }
 
             // You can return any component that you like here!
@@ -43,8 +58,10 @@ export default function ManageDoc() {
           inactiveTintColor: 'gray',
         }}
       >
+        {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
         <Tab.Screen name="AssignDoc" component={AssignDocScreen} />
         <Tab.Screen name="AcceptDoc" component={AcceptDocScreen} />
+        <Tab.Screen name="StatusDoc" component={StatusDocScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
