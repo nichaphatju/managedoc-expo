@@ -8,7 +8,7 @@ import {
   StatusBar,
   TextInput,
   TouchableOpacity,
-  Picker,
+  Picker
 } from 'react-native';
 import {CheckBox} from "native-base"
 import {
@@ -40,6 +40,8 @@ import BottomNavigation, {
 // var FileInput = require('react-simple-file-input');
 // var allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
 import firebase from 'firebase';
+import { FileSystem } from 'expo-document-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
 export class AssignDoc extends Component {
   tabs = [
@@ -94,21 +96,27 @@ export class AssignDoc extends Component {
         {name: 'employee', position: 'Employee User',key: 'user'},
         {name: 'dev', position: 'Developer User',key: 'dev'},
       ],
-      selectedUser: '',
       docTypes: [
         {label: 'A', value: 'A'},
         {label: 'B', value: 'B'},
         {label: 'C', value: 'C'},
         {label: 'D', value: 'D'},
       ],
-      selectedType: 'A',
+      formValue : {
+        selectedUser: '',
+        selectedType: 'A',
+        attachment: {},
+        topic: '',
+        updatedDate: ''
+      },
       activeTab: 'send',
       avatar: "",
       isUploading: false,
       progress: 0,
       avatarURL: "",
       files: [], //ใช้เก็บข้อมูล File ที่ Upload
-      cancelButtonClicked: false
+      cancelButtonClicked: false,
+      file: {}
     };
   }
 
@@ -153,15 +161,6 @@ export class AssignDoc extends Component {
     />
   )
 
-  // fileIsIncorrectFiletype = (file) => {
-  //   if (allowedFileTypes.indexOf(file.type) === -1) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-   
-
   cancelButtonClicked(){
     return this.state.cancelButtonClicked;
   }
@@ -188,6 +187,61 @@ export class AssignDoc extends Component {
     this.setState({file: file, fileContents: event.target.result});
   }
 
+  _pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({});
+    // alert(result.uri);
+    console.log(result);
+    if(result.type == 'success'){
+      this.state.formValue.attachment = this.uriToBlob(result.uri);
+      this.state.file = result;
+      console.log(this.state.file)
+    }
+  }
+
+  uriToBlob = (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        // return the blob
+        resolve(xhr.response);
+      };
+      
+      xhr.onerror = function() {
+        // something went wrong
+        reject(new Error('uriToBlob failed'));
+      };
+      // this helps us get a blob
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      
+      xhr.send(null);
+    });
+  }
+
+  uploadToFirebase = (blob) => {
+    return new Promise((resolve, reject)=>{
+      var storageRef = firebase.storage().ref();
+      storageRef.child('files/photo.jpg').put(blob, {
+        contentType: '*/*'
+      }).then((snapshot)=>{
+        blob.close();
+        resolve(snapshot);
+      }).catch((error)=>{
+        reject(error);
+      });
+    });
+  }
+
+  submitForm = () =>{
+    console.log('submitForm')
+    this.state.formValue.updatedDate = new Date();
+    var itemsRef = firebase.database().ref().child(`assignDoc`)
+    let formValues = this.state.formValue;
+    console.log(formValues)
+    itemsRef.push(formValues)
+    // this.uploadToFirebase(formValues.attachment);
+  }
+
   render() {
     const {classes, checkboxValue, checkboxLabel, checked} = this.props;
     const {checkboxes} = this.state;
@@ -199,7 +253,9 @@ export class AssignDoc extends Component {
         </View>
         <View style={styles.subHeaderLayout}>
           <View>
-            <Text style={styles.subHeaderText}>ส่งเอกสาร</Text>
+            <Text 
+                style={styles.subHeaderText}
+                onPress={this.submitForm} >ส่งเอกสาร</Text>
           </View>
         </View>
         <View style={styles.contentLayout}>
@@ -207,16 +263,18 @@ export class AssignDoc extends Component {
             <Text style={styles.labelText}>ส่งถึง :</Text>
             <Picker
               style={styles.inputText}
-              selectedValue={this.state.selectedUser}
+              selectedValue={this.state.formValue.selectedUser}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({selectedUser: itemValue})
-              }>
+                this.state.formValue.selectedUser = itemValue
+              }
+              >
               {this.loadUsers()}
             </Picker>
           </View>
           <View style={styles.row}>
             <Text style={styles.labelText}>เรื่อง :</Text>
             <TextInput
+              onChangeText={(text) => this.state.formValue.topic = text}
               style={styles.inputText}
               underlineColorAndroid="transparent"
             />
@@ -226,7 +284,7 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox 
                   color="#FF9900"
-                  checked={this.state.selectedType === 'A'}
+                  checked={this.state.formValue.selectedType === 'A'}
                   onPress={() => this.handleCheckBoxChanged('A')}
                   style={styles.checkBoxChoice}
                 />
@@ -239,7 +297,7 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.selectedType === 'B'}
+                  checked={this.state.formValue.selectedType === 'B'}
                   onPress={() => this.handleCheckBoxChanged('B')}
                   style={styles.checkBoxChoice}
                 />
@@ -252,7 +310,7 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.selectedType === 'C'}
+                  checked={this.state.formValue.selectedType === 'C'}
                   onPress={() => this.handleCheckBoxChanged('C')}
                   style={styles.checkBoxChoice}
                 />
@@ -265,7 +323,7 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.selectedType === 'D'}
+                  checked={this.state.formValue.selectedType === 'D'}
                   onPress={() => this.handleCheckBoxChanged('D')}
                   style={styles.checkBoxChoice}
                 />
@@ -276,23 +334,18 @@ export class AssignDoc extends Component {
             </View>
           </View>
           <View style={styles.row}>
-          {/* <label style={{backgroundColor: 'steelblue', color: 'white', padding: 10, borderRadius: 4, cursor: 'pointer'}}> */}
-            {/* <Text style={styles.chkBoxText}>Select your awesome avatar</Text> */}
-            {/* <FileInput
-              readAs='binary'
-              style={ { display: 'none' } }
- 
-              onLoadStart={this.showProgressBar}
-              onLoad={this.handleFileSelected}
-              onProgress={this.updateProgressBar}
- 
-              // cancelIf={this.fileIsIncorrectFiletype()}
-              abortIf={this.cancelButtonClicked}
- 
-              onCancel={this.showInvalidFileTypeMessage}
-              onAbort={this.resetCancelButtonClicked}
-             /> */}
-          {/* </label> */}
+          <TouchableOpacity
+              style={styles.uploadBtn}
+              onPress={() => this._pickDocument()}>
+              <Icon
+                name="attachment"
+                style={styles.uploadIcon}
+                onPress={() => this._pickDocument()} />
+              <TouchableOpacity onPress={() => this._pickDocument()}>
+                <Text style={styles.chkBoxText}>แนบเอกสาร</Text>
+              </TouchableOpacity>
+              <Text style={styles.chkBoxText}>{this.state.file.name}</Text>
+          </TouchableOpacity>
           </View>
         </View>
         {/* <BottomNavigation

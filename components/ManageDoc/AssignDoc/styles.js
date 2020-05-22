@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     // paddingTop: 20,
   },
   headerLayout: {
-    flex: 1.2,
+    flex: 1.5,
     backgroundColor: '#ff6600',
     justifyContent: 'center',
   },
@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subHeaderLayout: {
-    flex: 1,
+    flex: 0.9,
     backgroundColor: '#FF9934',
-    // justifyContent: 'center',
     flexDirection: 'row-reverse',
+    alignItems: 'center',
   },
   subHeaderText: {
     flex: 0.5,
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlignVertical: 'center',
     textAlign: 'center',
+    marginRight: 10
   },
   contentLayout: {
     flex: 10,
@@ -110,6 +111,26 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
+  uploadIcon: {
+    fontFamily: 'THSarabunNew Bold',
+    color: 'black',
+    fontSize: 30,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    borderRadius: 30,
+  },
+  uploadBtn: {
+    width: '80%',
+    backgroundColor: '#ffcc99',
+    borderRadius: 30,
+    height: 50,
+    marginBottom: 20,
+    padding: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
 });
 
 export {styles};
