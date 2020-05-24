@@ -24,11 +24,13 @@ const styles = StyleSheet.create({
   },
   headerLayout: {
     flex: 1.2,
+    height: 100,
     backgroundColor: '#ff6600',
     justifyContent: 'center',
   },
   subHeaderLayout: {
     flex: 1,
+    height: 20,
     backgroundColor: '#FF9934',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
   },
   contentLayout: {
     flex: 10,
+    // height: 100,
     alignItems: 'center',
     paddingTop: 10,
   },
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: '#F2F2F2',
     borderRadius: 0,
-    height: 50,
+    // height: 40,
     marginBottom: 20,
     // justifyContent: 'center',
     padding: 20,

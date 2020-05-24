@@ -29,29 +29,53 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import * as Font from 'expo-font'
 import firebase from 'firebase';
+import ItemList from '../../ItemList';
 
 export class SearchAssignDocScreen extends Component {
-
   constructor(props) {
     super(props)
 
     this.state = {
+        searchString:'',
         loading: true,
+        docs: []
     }
   }
 
-  async componentWillMount() {
-    await Font.loadAsync({
-        'THSarabunNew': require('../../../../assets/fonts/THSarabunNew.ttf'),
-        'THSarabunNew Bold': require('../../../../assets/fonts/THSarabunNew_Bold.ttf')
-    })
-    this.setState({ loading: false })
+  componentWillMount(){
+    let that = this;
+    // await Font.loadAsync({
+    //     'THSarabunNew': require('../../../../assets/fonts/THSarabunNew.ttf'),
+    //     'THSarabunNew Bold': require('../../../../assets/fonts/THSarabunNew_Bold.ttf')
+    // })    
+    firebase.database().ref('assignDoc/').on('value', function(data) {
+      console.log(data)
+      const arrReslt = Object.values(data.val());
+      const fbObject = data.val();
+        const newArr = [];
+        Object.keys(fbObject).map( (key,index)=>{
+            console.log(key);
+            console.log("||");
+            console.log(index);
+            fbObject[key]['Id'] = key;
+            newArr.push(fbObject[key]);
+        });
+      that.setState({loading:false, docs: newArr });
+    });
   }
 
   assignPage = () => {
     console.log('AssignDoc');
     this.props.navigation.navigate('AssignDoc');
   };
+
+  onChangeSearchFilter = (searchString) =>{
+    this.setState({loading:true,searchString:searchString});
+    this.state.docs.filter((doc) => {
+      doc.topic == searchString;
+    })
+    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+  }
 
   render() {
     if (this.state.loading) {
@@ -75,9 +99,7 @@ export class SearchAssignDocScreen extends Component {
                 style={styles.inputText}
                 placeholder="ค้นหาเอกสาร"
                 placeholderTextColor="#FFF"
-                onChangeText={(searchString) => {
-                  this.setState({searchString});
-                }}
+                onChangeText={this.onChangeSearchFilter}
                 underlineColorAndroid="transparent"
               />
             </View>
@@ -91,7 +113,7 @@ export class SearchAssignDocScreen extends Component {
               />
             </View>
           </View>
-          <View style={styles.contentLayout}>
+          {/* <View style={styles.contentLayout}>
             <TouchableOpacity
               style={styles.itemContentView}
               onPress={() => this.assignPage()}>
@@ -124,6 +146,9 @@ export class SearchAssignDocScreen extends Component {
                 </TouchableOpacity>
               </TouchableOpacity>
             </TouchableOpacity>
+          </View> */}
+          <View style={styles.contentLayout}>
+            <ItemList docs={this.state.docs}/>
           </View>
           <View style={styles.bottomFooter} />
         </View>
