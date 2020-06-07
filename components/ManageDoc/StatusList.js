@@ -9,10 +9,10 @@ import React, {
   } from 'react-native';
 // import firebase from 'firebase';
 import ListView from 'deprecated-react-native-listview';
-import {styles} from './AssignDoc/SearchAssignDoc/styles';
+import {styles} from './AcceptDoc/styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-class ItemList extends Component {
+class StatusList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -28,26 +28,10 @@ class ItemList extends Component {
         this.props.navigation.navigate('AssignDoc');
     };
 
-
-    // getDataSource(posts) {
-    //     console.log('getDataSource')
-    //     console.log(posts)
-    //     if(!posts) return;
-    //     return this.state.dataSource.cloneWithRows(posts);
-    // }
-
-    // componentDidMount() {
-    //     console.log('componentDidMount')
-    //     console.log(this.props.posts)
-    //     this.setState({dataSource: this.getDataSource(this.props.posts)});
-    // }
-
-    // componentWillReceiveProps(props) {
-    //     console.log('componentWillReceiveProps')
-    //     console.log(props.posts)
-    //     this.setState({dataSource: this.getDataSource(props.posts)});
-    // }
-
+    acceptPage = () => {
+        console.log('AcceptDoc');
+        this.props.navigation.navigate('AcceptDoc');
+    };
 
     listenForDocs(tmpDocs) {
         tmpDocs.on('value', (dataSnapshot) => {
@@ -131,4 +115,4 @@ class ItemList extends Component {
     }
 }
 
-export default ItemList;
+export default StatusList;

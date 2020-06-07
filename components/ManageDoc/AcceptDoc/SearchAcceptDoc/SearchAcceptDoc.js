@@ -57,15 +57,6 @@ export class SearchAcceptDocScreen extends Component {
               underlineColorAndroid="transparent"
             />
           </View>
-          <View>
-            <Icon
-              style={styles.addIcon}
-              name="add-circle-outline"
-              size={20}
-              color="#FFF"
-              onPress={() => this.acceptPage()}
-            />
-          </View>
         </View>
         <View style={styles.contentLayout}>
           <TouchableOpacity

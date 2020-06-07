@@ -91,24 +91,17 @@ export class AssignDoc extends Component {
     this.handleFileSelected = this.handleFileSelected.bind(this);
 
     this.state = {
-      userList: [
-        {name: 'admin', position: 'Admin User',key: 'admin'},
-        {name: 'employee', position: 'Employee User',key: 'user'},
-        {name: 'dev', position: 'Developer User',key: 'dev'},
-      ],
-      docTypes: [
-        {label: 'A', value: 'A'},
-        {label: 'B', value: 'B'},
-        {label: 'C', value: 'C'},
-        {label: 'D', value: 'D'},
-      ],
+      userList: [],
       formValue : {
         selectedUser: '',
-        selectedType: 'A',
+        selectedType: 'เพื่อโปรดทราบ',
         attachment: {},
         topic: '',
-        updatedDate: ''
+        updatedDate: new Date(),
+        status: 'assign'
       },
+      selectedType:'เพื่อโปรดทราบ',
+      selectedUser:'เพื่อโปรดทราบ',
       activeTab: 'send',
       avatar: "",
       isUploading: false,
@@ -120,9 +113,28 @@ export class AssignDoc extends Component {
     };
   }
 
+  componentWillMount(){
+    let that = this;
+    firebase.database().ref('users/').on('value', function(data) {
+      console.log(data)
+      const fbObject = data.val();
+        const newArr = [];
+        Object.keys(fbObject).map( (key,index)=>{
+            console.log(key);
+            console.log("||");
+            console.log(index);
+            console.log(fbObject[key])
+            // fbObject[key]['username'] = key;
+            newArr.push(fbObject[key]);
+        });
+      console.log(newArr)
+      that.setState({loading:false, userList: newArr });
+    });
+  }
+
   loadUsers() {
     return this.state.userList.map((user) => (
-      <Picker.Item key={user.key} label={user.name} value={user.name} />
+      <Picker.Item key={user.username} label={user.name} value={user.name} />
     ));
   }
 
@@ -133,18 +145,7 @@ export class AssignDoc extends Component {
   };
 
   handleCheckBoxChanged = (val) => {
-    // var docTypes = this.state.docTypes;
-    // docTypes.forEach((ele, i) => {
-    //   if (i == index) {
-    //     // ele.value = !ele.value;
-    //     // if (ele.value) {
-    //       this.setState({selectedType: ele.value});
-    //     // }
-    //     console.log(this.state.selectedType);
-    //   } else {
-    //     ele.value = '';
-    //   }
-    // });
+    console.log(val)
     this.setState({selectedType: val});
   };
 
@@ -234,13 +235,21 @@ export class AssignDoc extends Component {
 
   submitForm = () =>{
     console.log('submitForm')
-    this.state.formValue.updatedDate = new Date();
     var itemsRef = firebase.database().ref().child(`assignDoc`)
     let formValues = this.state.formValue;
+    formValues.selectedType = this.state.selectedType;
+    formValues.selectedUser = this.state.selectedUser;
+    formValues.updatedDate = new Date();
     console.log(formValues)
     itemsRef.push(formValues)
+    this.assignPage();
     // this.uploadToFirebase(formValues.attachment);
   }
+
+  assignPage = () => {
+    console.log('assignPage');
+    this.props.navigation.navigate('ManageDoc');
+  };
 
   render() {
     const {classes, checkboxValue, checkboxLabel, checked} = this.props;
@@ -263,9 +272,10 @@ export class AssignDoc extends Component {
             <Text style={styles.labelText}>ส่งถึง :</Text>
             <Picker
               style={styles.inputText}
-              selectedValue={this.state.formValue.selectedUser}
+              selectedValue={this.state.selectedUser}
               onValueChange={(itemValue, itemIndex) =>
-                this.state.formValue.selectedUser = itemValue
+                this.setState({ selectedUser: itemValue })
+                // this.state.selectedUser = itemValue.username
               }
               >
               {this.loadUsers()}
@@ -284,8 +294,8 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox 
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'A'}
-                  onPress={() => this.handleCheckBoxChanged('A')}
+                  checked={this.state.selectedType == 'เพื่อโปรดทราบ'}
+                  onPress={() => this.handleCheckBoxChanged('เพื่อโปรดทราบ')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดทราบ</Text>
@@ -297,8 +307,8 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'B'}
-                  onPress={() => this.handleCheckBoxChanged('B')}
+                  checked={this.state.selectedType == 'เพื่อโปรดพิจารณา'}
+                  onPress={() => this.handleCheckBoxChanged('เพื่อโปรดพิจารณา')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดพิจารณา</Text>
@@ -310,8 +320,8 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'C'}
-                  onPress={() => this.handleCheckBoxChanged('C')}
+                  checked={this.state.selectedType == 'เพื่อโปรดพิจารณาอนุมัติ'}
+                  onPress={() => this.handleCheckBoxChanged('เพื่อโปรดพิจารณาอนุมัติ')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เพื่อโปรดพิจารณาอนุมัติ</Text>
@@ -323,8 +333,8 @@ export class AssignDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'D'}
-                  onPress={() => this.handleCheckBoxChanged('D')}
+                  checked={this.state.selectedType == 'เพื่อโปรดพิจารณาอนุเคราะห์'}
+                  onPress={() => this.handleCheckBoxChanged('เพื่อโปรดพิจารณาอนุเคราะห์')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}>

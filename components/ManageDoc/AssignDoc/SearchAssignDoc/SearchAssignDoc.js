@@ -48,6 +48,19 @@ export class SearchAssignDocScreen extends Component {
     //     'THSarabunNew': require('../../../../assets/fonts/THSarabunNew.ttf'),
     //     'THSarabunNew Bold': require('../../../../assets/fonts/THSarabunNew_Bold.ttf')
     // })    
+    // firebase.auth().listUsers(1000)
+    //   .then(function(listUsersResult) {
+    //     listUsersResult.users.forEach(function(userRecord) {
+    //       console.log('user', userRecord.toJSON());
+    //     });
+    //     if (listUsersResult.pageToken) {
+    //       // List next batch of users.
+    //       listAllUsers(listUsersResult.pageToken);
+    //     }
+    //   })
+    // .catch(function(error) {
+    //   console.log('Error listing users:', error);
+    // });
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
       const arrReslt = Object.values(data.val());
