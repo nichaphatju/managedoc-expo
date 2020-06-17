@@ -25,12 +25,51 @@ import AcceptDoc from '../../AcceptDoc/AcceptDoc';
 
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
+import firebase from 'firebase';
+import AcceptList from '../../AcceptList';
 
 export class SearchAcceptDocScreen extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+        searchString:'',
+        loading: true,
+        docs: []
+    }
+  }
+
   acceptPage = () => {
     console.log('AcceptDoc');
     this.props.navigation.navigate('AcceptDoc');
   };
+
+  componentWillMount(){
+    let that = this;
+    firebase.database().ref('assignDoc/').on('value', function(data) {
+      console.log(data)
+      const arrReslt = Object.values(data.val());
+      const fbObject = data.val();
+        const newArr = [];
+        Object.keys(fbObject).map( (key,index)=>{
+            console.log(key);
+            console.log("||");
+            console.log(index);
+            fbObject[key]['Id'] = key;
+            newArr.push(fbObject[key]);
+        });
+      that.setState({loading:false, docs: newArr });
+    });
+  }
+
+  onChangeSearchFilter = (searchString) =>{
+    this.setState({loading:true,searchString:searchString});
+    this.state.docs.filter((doc) => {
+      doc.topic == searchString;
+    })
+    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+  }
 
   render() {
     return (
@@ -58,7 +97,7 @@ export class SearchAcceptDocScreen extends Component {
             />
           </View>
         </View>
-        <View style={styles.contentLayout}>
+        {/* <View style={styles.contentLayout}>
           <TouchableOpacity
             style={styles.itemContentView}
             onPress={() => this.acceptPage()}>
@@ -91,7 +130,10 @@ export class SearchAcceptDocScreen extends Component {
               </TouchableOpacity>
             </TouchableOpacity>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <View style={styles.contentLayout}>
+          <AcceptList docs={this.state.docs}/>
+        </View>        
         <View style={styles.bottomFooter} />
       </View>
     );

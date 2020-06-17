@@ -42,6 +42,7 @@ import BottomNavigation, {
 import firebase from 'firebase';
 import { FileSystem } from 'expo-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
+// import { FilePond, File, registerPlugin } from 'react-filepond';
 
 export class AssignDoc extends Component {
   tabs = [
@@ -109,7 +110,10 @@ export class AssignDoc extends Component {
       avatarURL: "",
       files: [], //ใช้เก็บข้อมูล File ที่ Upload
       cancelButtonClicked: false,
-      file: {}
+      file: {},
+      uploadValue: 0, //ใช้เพื่อดู Process การ Upload
+      filesMetadata:[], //ใช้เพื่อรับข้อมูล Metadata จาก Firebase
+      rows:  [], //ใช้วาด DataTable
     };
   }
 
@@ -189,13 +193,72 @@ export class AssignDoc extends Component {
   }
 
   _pickDocument = async () => {
+    console.log('_pickDocument');
     let result = await DocumentPicker.getDocumentAsync({});
+    const { type, uri } = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: false,
+      type: '*/*',
+    });
     // alert(result.uri);
-    console.log(result);
-    if(result.type == 'success'){
-      this.state.formValue.attachment = this.uriToBlob(result.uri);
+    // console.log(result);
+    if (type === 'cancel') {
+      return;
+    }
+    console.log(type)
+    console.log('pickerResponse', uri);
+    if(type == 'success'){
+      // const copyAsync = await FileSystem.copyAsync({from: result.uri, to: fileUri})
+
+      // const read = await FileSystem.readAsStringAsync(fileUri)
+      // const json = JSON.parse(read)
+      // console.log({json})
+
+      // this.state.formValue.attachment = this.uriToBlob(result.uri);
+      // const response = await fetch(result.uri);
+      // this.state.formValue.attachment = await response.blob();
+      // const blob = await response.blob();
+      // const blob = new Blob([result],{type: 'application/pdf'})
+      // console.log('BLOB ==> ')
+      // console.log(blob)
+      // const fetchResponse = await fetch(uri);
+      // console.log('fetchResponse', fetchResponse);
+      // const blob = await fetchResponse.blob();
+      // console.log('blob', blob);
+      await fetch(uri)
+                .then(response => response.blob())  //--> fetch the fileUri to blob
+                .then(blob => {
+                    // console.log(blob)		
+                    this.uploadToFirebase(blob,result.name).then(
+                          function(res) {
+                            console.log('##uploadToFirebase##')
+                            console.log(res)
+                            console.log('Upload file '+ result.name +' successfully.');
+                          }
+                        ).catch(
+                          function(errors) {
+                              let message = 'Upload file error'; // Default error message
+                              console.log(message);
+                              console.log(errors)
+                          }
+                        );   				
+                    // var reader = new FileReader();
+                    // reader.readAsDataURL(blob);		//--> The readAsDataURL method is used to read the contents of the specified Blob or File. 
+                    // reader.onloadend = () => {
+                    //     var base64 = reader.result;
+                    //     this.setState({
+                    //         fileUrl: uri,
+                    //         fileName: result.name,
+                    //         fileData: base64,                //--> put the set state on the onloadend method
+                    //     });
+                    //     console.log(base64);
+                    // };
+                })
+                .catch(error => console.error(error))   
       this.state.file = result;
       console.log(this.state.file)
+    }else{
+      console.log('++ Upload error ++');
+      console.log(result)
     }
   }
 
@@ -215,17 +278,41 @@ export class AssignDoc extends Component {
       xhr.responseType = 'blob';
       xhr.open('GET', uri, true);
       
-      xhr.send(null);
+      // xhr.send(null);
+
+      xhr.send();
     });
   }
 
-  uploadToFirebase = (blob) => {
+  uploadToFirebase = (blob,name) => {
     return new Promise((resolve, reject)=>{
+      console.log('--upload '+name+' ToFirebase--')
+      console.log(blob)
       var storageRef = firebase.storage().ref();
-      storageRef.child('files/photo.jpg').put(blob, {
+      storageRef.child('files/'+name).put(blob, {
         contentType: '*/*'
       }).then((snapshot)=>{
         blob.close();
+        //Get metadata
+        storageRef.child('files/'+name).getMetadata().then((metadata) => {
+            // Metadata now contains the metadata for 'filepond/${file.name}'
+            let metadataFile = { 
+                name: metadata.name, 
+                size: metadata.size, 
+                contentType: metadata.contentType, 
+                fullPath: metadata.fullPath, 
+                downloadURLs: metadata.downloadURLs[0], 
+            }
+            console.log('metadata ',metadata)
+            //Process save metadata
+            const databaseRef = firebase.database().ref('/filepond');
+            databaseRef.push({  metadataFile });
+
+        }).catch(function(error) {
+          this.setState({
+              messag:`Upload error : ${error.message}`
+          })
+        });
         resolve(snapshot);
       }).catch((error)=>{
         reject(error);
@@ -243,8 +330,75 @@ export class AssignDoc extends Component {
     console.log(formValues)
     itemsRef.push(formValues)
     this.assignPage();
-    // this.uploadToFirebase(formValues.attachment);
+    // this.uploadToFirebase(formValues.attachment).then(
+    //         function(res) {
+    //           console.log(res)
+    //           let errorMessage = 'Upload file error';
+    //           console.log(message);
+    //       }
+    // ).catch(
+    //   function(errors) {
+    //       let message = 'Upload file error'; // Default error message
+    //       console.log(message);
+    //   }
+    // );
   }
+
+  // handleInit() {
+  //   // handle init file upload here
+  //   console.log('now initialised', this.pond);
+  // }
+
+  // handleProcessing(fieldName, file, metadata, load, error, progress, abort) {
+  //   // handle file upload here
+  //   console.log(" handle file upload here");
+  //   console.log(file);
+
+  //   const fileUpload = file;
+  //   const storageRef = firebase.storage().ref(`filepond/${file.name}`);
+  //   const task = storageRef.put(fileUpload)
+
+  //     task.on(`state_changed` , (snapshort) => {
+  //         console.log(snapshort.bytesTransferred, snapshort.totalBytes)
+  //         let percentage = (snapshort.bytesTransferred / snapshort.totalBytes) * 100;
+  //         //Process
+  //         this.setState({
+  //             uploadValue:percentage
+  //         })
+  //     } , (error) => {
+  //         //Error
+  //         this.setState({
+  //             messag:`Upload error : ${error.messag}`
+  //         })
+  //     } , () => {
+  //       //Success
+  //       this.setState({
+  //           messag:`Upload Success`,
+  //           picture: task.snapshot.downloadURL //เผื่อนำไปใช้ต่อในการแสดงรูปที่ Upload ไป
+  //       })
+
+  //       //Get metadata
+  //       storageRef.getMetadata().then((metadata) => {
+  //           // Metadata now contains the metadata for 'filepond/${file.name}'
+  //           let metadataFile = { 
+  //               name: metadata.name, 
+  //               size: metadata.size, 
+  //               contentType: metadata.contentType, 
+  //               fullPath: metadata.fullPath, 
+  //               downloadURLs: metadata.downloadURLs[0], 
+  //           }
+
+  //           //Process save metadata
+  //           const databaseRef = firebase.database().ref('/filepond');
+  //           databaseRef.push({  metadataFile });
+
+  //       }).catch(function(error) {
+  //         this.setState({
+  //             messag:`Upload error : ${error.message}`
+  //         })
+  //       });
+  //   })
+  // }
 
   assignPage = () => {
     console.log('assignPage');
@@ -344,6 +498,17 @@ export class AssignDoc extends Component {
             </View>
           </View>
           <View style={styles.row}>
+            {/* <FilePond allowMultiple={true}
+                        maxFiles={3}
+                        ref= {ref => this.pond = ref}
+                        server={{ process: this.handleProcessing.bind(this) }}
+                        oninit={() => this.handleInit()}>
+                    
+                    {this.state.files.map(file => (
+                        <File key={file} source={file} />
+                    ))}
+                    
+            </FilePond> */}
           <TouchableOpacity
               style={styles.uploadBtn}
               onPress={() => this._pickDocument()}>
@@ -354,7 +519,7 @@ export class AssignDoc extends Component {
               <TouchableOpacity onPress={() => this._pickDocument()}>
                 <Text style={styles.chkBoxText}>แนบเอกสาร</Text>
               </TouchableOpacity>
-              <Text style={styles.chkBoxText}>{this.state.file.name}</Text>
+              <Text style={styles.chkBoxFileNameText}>{this.state.file.name}</Text>
           </TouchableOpacity>
           </View>
         </View>

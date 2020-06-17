@@ -9,8 +9,11 @@ import React, {
   } from 'react-native';
 // import firebase from 'firebase';
 import ListView from 'deprecated-react-native-listview';
-import {styles} from './AcceptDoc/styles';
+import {liststyles} from './liststyle';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import AcceptDoc from './AcceptDoc/AcceptDoc';
 
 class AcceptList extends Component {
     constructor(props) {
@@ -51,35 +54,35 @@ class AcceptList extends Component {
 
     renderRow = (doc) => {
         return (
-        <View style={styles.contentLayout}>
+        <View style={liststyles.contentLayout}>
             <TouchableOpacity
-              style={styles.itemContentView}
-              onPress={() => this.assignPage()}>
+              style={liststyles.itemContentView}
+              onPress={() => this.acceptPage()}>
               <TouchableOpacity
-                style={styles.subItemTop}
-                onPress={() => this.assignPage()}>
+                style={liststyles.subItemTop}
+                onPress={() => this.acceptPage()}>
                 <Icon
                   name="account-circle"
-                  style={styles.itemIcon}
-                  onPress={() => this.assignPage()}
+                  style={liststyles.itemIcon}
+                  onPress={() => this.acceptPage()}
                 />
                 <TouchableOpacity
-                  style={styles.rowStyle}
-                  onPress={() => this.assignPage()}>
-                  <Text style={styles.itemText}>{doc.selectedUser}</Text>
-                  <Text style={styles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+                  style={liststyles.rowStyle}
+                  onPress={() => this.acceptPage()}>
+                  <Text style={liststyles.itemText}>{doc.selectedUser}</Text>
+                  <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
                 </TouchableOpacity>
                 <Icon
                   name="remove-red-eye"
-                  style={styles.itemIcon} 
+                  style={liststyles.itemIcon} 
                 />
-                <Text style={styles.redDot}/>
+                <Text style={liststyles.redDot}/>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.subItemBottom}
+                style={liststyles.subItemBottom}
                 >
                 <TouchableOpacity >
-                  <Text style={styles.itemTextTopic}>{doc.topic}</Text>
+                  <Text style={liststyles.itemTextTopic}>{doc.topic}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             </TouchableOpacity>
@@ -114,5 +117,27 @@ class AcceptList extends Component {
         );
     }
 }
+
+// const AcceptListNavigator = createStackNavigator(
+//   {
+//     AcceptDoc: {
+//       screen: AcceptDoc,
+//       navigationOptions: {
+//         headerShown: false,
+//       },
+//     },
+//     AcceptList: {
+//       screen: AcceptListItem,
+//       navigationOptions: {
+//         headerShown: false,
+//       },
+//     }
+//   },
+//   {
+//     initialRouteName: 'AcceptList',
+//   },
+// );
+
+// const AcceptList = createAppContainer(AcceptListNavigator);
 
 export default AcceptList;

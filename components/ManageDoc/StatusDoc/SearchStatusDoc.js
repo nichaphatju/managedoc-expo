@@ -17,6 +17,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import * as Font from 'expo-font'
 import firebase from 'firebase';
+import StatusList from '../../ManageDoc/StatusList';
 
 export class SearchStatusDocScreen extends Component {
 
@@ -28,12 +29,30 @@ export class SearchStatusDocScreen extends Component {
     }
   }
 
-  async componentWillMount() {
-    // await Font.loadAsync({
-    //     'THSarabunNew': require('../../../../assets/fonts/THSarabunNew.ttf'),
-    //     'THSarabunNew Bold': require('../../../../assets/fonts/THSarabunNew_Bold.ttf')
-    // })
-    this.setState({ loading: false })
+  componentWillMount(){
+    let that = this;
+    firebase.database().ref('assignDoc/').on('value', function(data) {
+      console.log(data)
+      const arrReslt = Object.values(data.val());
+      const fbObject = data.val();
+        const newArr = [];
+        Object.keys(fbObject).map( (key,index)=>{
+            console.log(key);
+            console.log("||");
+            console.log(index);
+            fbObject[key]['Id'] = key;
+            newArr.push(fbObject[key]);
+        });
+      that.setState({loading:false, docs: newArr });
+    });
+  }
+
+  onChangeSearchFilter = (searchString) =>{
+    this.setState({loading:true,searchString:searchString});
+    this.state.docs.filter((doc) => {
+      doc.topic == searchString;
+    })
+    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
   }
 
   statusPage = () => {
@@ -79,7 +98,7 @@ export class SearchStatusDocScreen extends Component {
               />
             </View> */}
           </View>
-          <View style={styles.contentLayout}>
+          {/* <View style={styles.contentLayout}>
             <TouchableOpacity
               style={styles.itemContentView}
               onPress={() => this.statusPage()}>
@@ -112,6 +131,9 @@ export class SearchStatusDocScreen extends Component {
                 </TouchableOpacity>
               </TouchableOpacity>
             </TouchableOpacity>
+          </View> */}
+          <View style={styles.contentLayout}>
+            <StatusList docs={this.state.docs}/>
           </View>
           <View style={styles.bottomFooter} />
         </View>

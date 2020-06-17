@@ -9,7 +9,7 @@ import React, {
   } from 'react-native';
 // import firebase from 'firebase';
 import ListView from 'deprecated-react-native-listview';
-import {styles} from './AcceptDoc/styles';
+import {liststyles} from './liststyle';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 class StatusList extends Component {
@@ -51,35 +51,35 @@ class StatusList extends Component {
 
     renderRow = (doc) => {
         return (
-        <View style={styles.contentLayout}>
+        <View style={liststyles.contentLayout}>
             <TouchableOpacity
-              style={styles.itemContentView}
+              style={liststyles.itemContentView}
               onPress={() => this.assignPage()}>
               <TouchableOpacity
-                style={styles.subItemTop}
+                style={liststyles.subItemTop}
                 onPress={() => this.assignPage()}>
                 <Icon
                   name="account-circle"
-                  style={styles.itemIcon}
+                  style={liststyles.itemIcon}
                   onPress={() => this.assignPage()}
                 />
                 <TouchableOpacity
-                  style={styles.rowStyle}
+                  style={liststyles.rowStyle}
                   onPress={() => this.assignPage()}>
-                  <Text style={styles.itemText}>{doc.selectedUser}</Text>
-                  <Text style={styles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+                  <Text style={liststyles.itemText}>{doc.selectedUser}</Text>
+                  <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
                 </TouchableOpacity>
                 <Icon
                   name="remove-red-eye"
-                  style={styles.itemIcon} 
+                  style={liststyles.itemIcon} 
                 />
-                <Text style={styles.redDot}/>
+                <Text style={liststyles.redDot}/>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.subItemBottom}
+                style={liststyles.subItemBottom}
                 >
                 <TouchableOpacity >
-                  <Text style={styles.itemTextTopic}>{doc.topic}</Text>
+                  <Text style={liststyles.itemTextTopic}>{doc.topic}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             </TouchableOpacity>
