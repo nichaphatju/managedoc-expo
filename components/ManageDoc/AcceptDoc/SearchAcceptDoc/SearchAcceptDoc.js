@@ -8,6 +8,7 @@ import {
   StatusBar,
   TextInput,
   TouchableOpacity,
+  FlatList
 } from 'react-native';
 
 import {
@@ -27,6 +28,7 @@ import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import firebase from 'firebase';
 import AcceptList from '../../AcceptList';
+import {liststyles} from '../../liststyle';
 
 export class SearchAcceptDocScreen extends Component {
 
@@ -34,6 +36,7 @@ export class SearchAcceptDocScreen extends Component {
     super(props)
 
     this.state = {
+        isLoading: false,
         searchString:'',
         loading: true,
         docs: []
@@ -69,6 +72,66 @@ export class SearchAcceptDocScreen extends Component {
       doc.topic == searchString;
     })
     this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+  }
+
+  listenForDocs(tmpDocs) {
+    tmpDocs.on('value', (dataSnapshot) => {
+        var docs = [];
+        dataSnapshot.forEach((child) => {
+            docs.push({
+                name: child.val().title,
+                _key: child.key
+            });
+        });
+
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(docs)
+        });
+    });
+  }
+
+  renderRefreshControl() {
+    this.setState({ isLoading: true })
+    // this.props.getPosts();
+  }
+
+
+  renderRow = (doc) => {
+    return (
+      <View style={liststyles.contentLayout}>
+        <TouchableOpacity
+          style={liststyles.itemContentView}
+          onPress={() => this.acceptPage()}>
+          <TouchableOpacity
+            style={liststyles.subItemTop}
+            onPress={() => this.acceptPage()}>
+            <Icon
+              name="account-circle"
+              style={liststyles.itemIcon}
+              onPress={() => this.acceptPage()}
+            />
+            <TouchableOpacity
+              style={liststyles.rowStyle}
+              onPress={() => this.acceptPage()}>
+              <Text style={liststyles.itemText}>{doc.selectedUser}</Text>
+              <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+            </TouchableOpacity>
+            <Icon
+              name="remove-red-eye"
+              style={liststyles.itemIcon} 
+            />
+            <Text style={liststyles.redDot}/>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={liststyles.subItemBottom}
+            >
+            <TouchableOpacity >
+              <Text style={liststyles.itemTextTopic}>{doc.topic}</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   render() {
@@ -132,7 +195,17 @@ export class SearchAcceptDocScreen extends Component {
           </TouchableOpacity>
         </View> */}
         <View style={styles.contentLayout}>
-          <AcceptList docs={this.state.docs}/>
+          <FlatList
+                data={this.state.docs}
+                renderItem={({item}) => this.renderRow(item)}
+                keyExtractor={(item, index) => item.Id}
+                onRefresh={() => this.renderRefreshControl()}
+                refreshing={this.state.isLoading}
+                initialNumToRender={3}
+                contentContainerStyle={{
+                    flexGrow: 0,
+                }}
+            />
         </View>        
         <View style={styles.bottomFooter} />
       </View>
