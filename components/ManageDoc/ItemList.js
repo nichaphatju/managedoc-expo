@@ -82,7 +82,7 @@ class ItemList extends Component {
                 <TouchableOpacity
                   style={styles.rowStyle}
                   onPress={() => this.assignPage()}>
-                  <Text style={styles.itemText}>{doc.selectedUser}</Text>
+                  <Text style={styles.itemText}>{doc.assignTo}</Text>
                   <Text style={styles.itemTextDetail}>วันนี้ 11.30 น.</Text>
                 </TouchableOpacity>
                 <Icon

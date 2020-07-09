@@ -94,7 +94,7 @@ export class AssignDoc extends Component {
     this.state = {
       userList: [],
       formValue : {
-        selectedUser: '',
+        assignTo: '',
         selectedType: 'เพื่อโปรดทราบ',
         attachment: {},
         topic: '',
@@ -102,7 +102,6 @@ export class AssignDoc extends Component {
         status: 'assign'
       },
       selectedType:'เพื่อโปรดทราบ',
-      selectedUser:'เพื่อโปรดทราบ',
       activeTab: 'send',
       avatar: "",
       isUploading: false,
@@ -322,11 +321,14 @@ export class AssignDoc extends Component {
 
   submitForm = () =>{
     console.log('submitForm')
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var itemsRef = firebase.database().ref().child(`assignDoc`)
     let formValues = this.state.formValue;
     formValues.selectedType = this.state.selectedType;
-    formValues.selectedUser = this.state.selectedUser;
-    formValues.updatedDate = new Date();
+    formValues.assignTo = this.state.assignTo;
+    formValues.updatedDate = new Date().toString();
+    formValues.assignBy = displayName;
     console.log(formValues)
     itemsRef.push(formValues)
     this.assignPage();
@@ -426,9 +428,9 @@ export class AssignDoc extends Component {
             <Text style={styles.labelText}>ส่งถึง :</Text>
             <Picker
               style={styles.inputText}
-              selectedValue={this.state.selectedUser}
+              selectedValue={this.state.assignTo}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({ selectedUser: itemValue })
+                this.setState({ assignTo: itemValue })
                 // this.state.selectedUser = itemValue.username
               }
               >

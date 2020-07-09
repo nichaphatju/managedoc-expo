@@ -38,7 +38,8 @@ export class SearchAssignDocScreen extends Component {
     this.state = {
         searchString:'',
         loading: true,
-        docs: []
+        docs: [],
+        currentUser: {}
     }
   }
 
@@ -70,11 +71,15 @@ export class SearchAssignDocScreen extends Component {
             console.log(key);
             console.log("||");
             console.log(index);
+            // console.log(user)
             fbObject[key]['Id'] = key;
-            newArr.push(fbObject[key]);
+            var userInfo = firebase.auth().currentUser;
+            var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+            if(fbObject[key].status == 'assign' && displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
         });
       that.setState({loading:false, docs: newArr });
     });
+    
   }
 
   assignPage = () => {

@@ -60,7 +60,9 @@ export class SearchAcceptDocScreen extends Component {
             console.log("||");
             console.log(index);
             fbObject[key]['Id'] = key;
-            newArr.push(fbObject[key]);
+            var userInfo = firebase.auth().currentUser;
+            var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+            if(fbObject[key].status == 'accept' && displayName == fbObject[key].assignTo) newArr.push(fbObject[key]);
         });
       that.setState({loading:false, docs: newArr });
     });
@@ -113,7 +115,7 @@ export class SearchAcceptDocScreen extends Component {
             <TouchableOpacity
               style={liststyles.rowStyle}
               onPress={() => this.acceptPage()}>
-              <Text style={liststyles.itemText}>{doc.selectedUser}</Text>
+              <Text style={liststyles.itemText}>{doc.assignTo}</Text>
               <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
             </TouchableOpacity>
             <Icon
