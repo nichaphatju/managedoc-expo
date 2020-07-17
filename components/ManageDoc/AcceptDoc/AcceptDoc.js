@@ -5,7 +5,10 @@ import {
   StatusBar,
   TextInput,
   TouchableOpacity,
-  Picker
+  Picker,
+  Dimensions,
+  ScrollView,
+  SafeAreaView
 } from 'react-native';
 
 import {
@@ -19,6 +22,9 @@ import {
 import {styles} from './styles';
 import firebase from 'firebase';
 import {CheckBox} from "native-base";
+import PDFReader from 'rn-pdf-reader-js'
+import * as FileSystem from 'expo-file-system';
+import renderIf from '../renderIf';
 
 export class AcceptDoc extends Component {
 
@@ -53,7 +59,13 @@ export class AcceptDoc extends Component {
       avatarURL: "",
       files: [], //ใช้เก็บข้อมูล File ที่ Upload
       cancelButtonClicked: false,
-      file: {}
+      file: {},
+      pdfFileUrl:"",
+      recordData:{},
+      annouceType: "",  // ทราบ,เห็นชอบ
+      status: "",     // สถานะ
+      sendType:"",    // แจ้ง,มอบ
+      sendTo:""
     };
   }
 
@@ -69,6 +81,101 @@ export class AcceptDoc extends Component {
     ));
   }
 
+  async componentDidMount() {
+    var that = this;
+    console.log('componentDidMount')
+    console.log(this.props.navigation.state.params.docId)
+    firebase.database().ref('assignDoc/'+this.props.navigation.state.params.docId).on('value', function(data) {
+      that.setState({recordData:data})
+    });
+    const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
+    ref.getDownloadURL().then(url => {
+      console.log('url >> '+url)
+      that.setState({pdfFileUrl:url})
+      // that.setstate.pdfFileUrl = url;
+    })
+    // ref.on('value', snapshot => {
+    //   const val = snapshot.val();
+    //   console.log(val);
+    // });
+  }
+
+  componentWillMount() {
+    console.log('componentWillMount')
+    console.log(this.props.navigation.state.params.docId)
+    let that = this;
+    firebase.database().ref('users/').on('value', function(data) {
+      console.log(data)
+      const fbObject = data.val();
+        const newArr = [];
+        newArr.push({ key: '' , name : 'กรุณาเลือก'})
+        Object.keys(fbObject).map( (key,index)=>{
+            // fbObject[key]['username'] = key;
+            newArr.push(fbObject[key]);
+        });
+      console.log(newArr)
+      that.setState({loading:false, userList: newArr, assignTo: newArr[0].name });
+    });
+  }
+
+  updateData = () =>{
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    var that = this;
+    if(this.state.sendType != '' && this.sendTo == ''){
+      alert('กรุณาเลือกผู้รับเอกสารต่อ');
+      return;
+    }
+    console.log(that.recordData)
+    firebase.database().ref('assignDoc/' + that.recordData.key).set({
+      announceType : that.annouceType,
+      status: that.state.status
+    });
+    if(this.state.sendType != '' && this.sendTo != ''){
+      var itemsRef = firebase.database().ref().child(`assignDoc`);
+      let formValues = this.state.formValue;
+      formValues.selectedType = this.state.sendType;
+      formValues.assignTo = this.sendTo;
+      formValues.updatedDate = new Date().toString();
+      formValues.assignBy = displayName;
+      console.log(formValues)
+      itemsRef.push(formValues).then((snap) => {
+        const key = snap.key 
+        console.log('key ==> '+key)
+        // var historyRef = firebase.database().ref().child(`histories`);
+        var f = {uri : that.recordData.attachment.uri, name : key};
+        this.uploadFile(f).then(
+          function(res) {
+            console.log('##uploadToFirebase##')
+            console.log(JSON.stringify(res))
+            console.log('Upload file '+ key +' successfully.');
+          }
+        ).catch(
+          function(errors) {
+              let message = 'Upload file error'; // Default error message
+              console.log(message);
+              console.log(JSON.stringify(errors))
+          }
+        );  
+        this.assignPage();
+      }).catch(err => {
+        alert("เกิดข้อผิดพลาด")
+        console.log(JSON.stringify(err));
+      })
+    }
+
+  }
+
+  handleAnnouceCheckBoxChanged = (val) => {
+    console.log(val)
+    this.setState({annouceType: val});
+  };
+
+  handleSendCheckBoxChanged = (val) => {
+    console.log(val)
+    this.setState({sendType: val});
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -83,14 +190,27 @@ export class AcceptDoc extends Component {
           </View>
         </View>
         <View style={styles.contentLayout}>
-
+        <SafeAreaView style={styles.containerSA}>
+          <View style={{flex:1,justifyContent:'center'}}>
+                {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '', 
+                    <PDFReader
+                      style={styles.pdf}
+                      source={{
+                        uri: this.state.pdfFileUrl,
+                      }}
+                      withScroll={true}
+                  />
+                )}
+          </View>
+          </SafeAreaView>
+          <View style={{flex:1,justifyContent:'center'}}>
           <View style={styles.row}>
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox 
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'A'}
-                  onPress={() => this.handleCheckBoxChanged('A')}
+                  checked={this.state.annouceType === 'ทราบ'}
+                  onPress={() => this.handleAnnouceCheckBoxChanged('ทราบ')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> ทราบ</Text>
@@ -102,8 +222,8 @@ export class AcceptDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'B'}
-                  onPress={() => this.handleCheckBoxChanged('B')}
+                  checked={this.state.annouceType === 'เห็นชอบ'}
+                  onPress={() => this.handleAnnouceCheckBoxChanged('เห็นชอบ')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> เห็นชอบ</Text>
@@ -114,10 +234,10 @@ export class AcceptDoc extends Component {
             <Text style={styles.labelText}>สถานะ :</Text>
             <Picker
               style={styles.inputText}
-              selectedValue={this.state.formValue.selectedUser}
-              // onValueChange={(itemValue, itemIndex) =>
-              //   this.setState({selectedUser: itemValue})
-              // }
+              selectedValue={this.state.status}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({status: itemValue})
+              }
               >
               {this.loadStatusOptions()}
             </Picker>
@@ -127,8 +247,8 @@ export class AcceptDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox 
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'A'}
-                  onPress={() => this.handleCheckBoxChanged('A')}
+                  checked={this.state.sendType === 'แจ้ง'}
+                  onPress={() => this.handleSendCheckBoxChanged('แจ้ง')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> แจ้ง</Text>
@@ -140,8 +260,8 @@ export class AcceptDoc extends Component {
               <View style={styles.chkBoxContainerRow}>
                 <CheckBox
                   color="#FF9900"
-                  checked={this.state.formValue.selectedType === 'B'}
-                  onPress={() => this.handleCheckBoxChanged('B')}
+                  checked={this.state.sendType === 'มอบ'}
+                  onPress={() => this.handleSendCheckBoxChanged('มอบ')}
                   style={styles.checkBoxChoice}
                 />
                 <Text style={styles.chkBoxText}> มอบ</Text>
@@ -152,10 +272,10 @@ export class AcceptDoc extends Component {
             <Text style={styles.labelText}>ส่งต่อ :</Text>
             <Picker
               style={styles.inputText}
-              selectedValue={this.state.formValue.selectedUser}
-              // onValueChange={(itemValue, itemIndex) =>
-              //   this.setState({selectedUser: itemValue})
-              // }
+              selectedValue={this.state.sendTo}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({sendTo: itemValue})
+              }
               >
               {this.loadUsers()}
             </Picker>
@@ -169,6 +289,10 @@ export class AcceptDoc extends Component {
                 // underlineColorAndroid="transparent"
               />
           </View>
+          </View>
+          {/* </View> */}
+          {/* </SafeAreaView> */}
+          {/* </ScrollView> */}
         </View>
         <View style={styles.bottomFooter} />
       </View>

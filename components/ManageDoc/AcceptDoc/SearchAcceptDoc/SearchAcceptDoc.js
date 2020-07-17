@@ -43,12 +43,16 @@ export class SearchAcceptDocScreen extends Component {
     }
   }
 
-  acceptPage = () => {
+  acceptPage = (docId) => {
     console.log('AcceptDoc');
-    this.props.navigation.navigate('AcceptDoc');
+    console.log(docId)
+    this.props.navigation.navigate('AcceptDoc',{
+      docId: docId,
+    });
   };
 
   componentWillMount(){
+    // console.log('componentWillMount')
     let that = this;
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
@@ -62,10 +66,21 @@ export class SearchAcceptDocScreen extends Component {
             fbObject[key]['Id'] = key;
             var userInfo = firebase.auth().currentUser;
             var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
-            if(fbObject[key].status == 'accept' && displayName == fbObject[key].assignTo) newArr.push(fbObject[key]);
+            var dt = that.convertDateTime(fbObject[key].updatedDate);
+            fbObject[key].updatedDate = dt;
+            if(displayName == fbObject[key].assignTo) newArr.push(fbObject[key]);
         });
       that.setState({loading:false, docs: newArr });
     });
+  }
+
+  convertDateTime(dtStr){
+    var dt = new Date(dtStr),
+    mnth = ("0" + (dt.getMonth() + 1)).slice(-2),
+    day = ("0" + dt.getDate()).slice(-2),
+    hr = ("0" + dt.getHours()).slice(-2),
+    min = ("0" + dt.getMinutes()).slice(-2);
+    return [day,mnth,dt.getFullYear()].join("/") + ' ' + hr +':'+min;
   }
 
   onChangeSearchFilter = (searchString) =>{
@@ -103,20 +118,20 @@ export class SearchAcceptDocScreen extends Component {
       <View style={liststyles.contentLayout}>
         <TouchableOpacity
           style={liststyles.itemContentView}
-          onPress={() => this.acceptPage()}>
+          onPress={() => this.acceptPage(doc.Id)}>
           <TouchableOpacity
             style={liststyles.subItemTop}
-            onPress={() => this.acceptPage()}>
+            onPress={() => this.acceptPage(doc.Id)}>
             <Icon
               name="account-circle"
               style={liststyles.itemIcon}
-              onPress={() => this.acceptPage()}
+              onPress={() => this.acceptPage(doc.Id)}
             />
             <TouchableOpacity
               style={liststyles.rowStyle}
-              onPress={() => this.acceptPage()}>
+              onPress={() => this.acceptPage(doc.Id)}>
               <Text style={liststyles.itemText}>{doc.assignTo}</Text>
-              <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+              <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
             <Icon
               name="remove-red-eye"

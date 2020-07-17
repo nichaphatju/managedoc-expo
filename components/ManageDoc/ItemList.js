@@ -83,7 +83,7 @@ class ItemList extends Component {
                   style={styles.rowStyle}
                   onPress={() => this.assignPage()}>
                   <Text style={styles.itemText}>{doc.assignTo}</Text>
-                  <Text style={styles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+                  <Text style={styles.itemTextDetail}>{doc.updatedDate}</Text>
                 </TouchableOpacity>
                 <Icon
                   name="remove-red-eye"

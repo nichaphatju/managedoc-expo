@@ -16,6 +16,7 @@
     "deprecated-react-native-listview": "^0.0.6",
     "expo": "~37.0.3",
     "expo-document-picker": "^8.1.0",
+    "expo-file-system": "^9.0.1",
     "expo-font": "^8.1.1",
     "filepond-plugin-image-preview": "^4.6.4",
     "firebase": "7.9.0",
@@ -28,12 +29,15 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
     "react-native-material-bottom-navigation": "^1.0.5",
     "react-native-paper": "^3.10.1",
+    "react-native-pdf": "^6.2.0",
     "react-native-safe-area-context": "^1.0.0",
     "react-native-safe-area-view": "^1.1.1",
     "react-native-screens": "^2.7.0",
     "react-native-web": "~0.11.7",
+    "react-native-webview": "^10.3.2",
     "react-navigation": "^4.3.9",
-    "react-navigation-stack": "^2.5.0"
+    "react-navigation-stack": "^2.5.0",
+    "rn-pdf-reader-js": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

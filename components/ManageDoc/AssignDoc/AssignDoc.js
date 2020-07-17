@@ -102,6 +102,7 @@ export class AssignDoc extends Component {
         status: 'assign'
       },
       selectedType:'เพื่อโปรดทราบ',
+      assignTo: '',
       activeTab: 'send',
       avatar: "",
       isUploading: false,
@@ -131,7 +132,7 @@ export class AssignDoc extends Component {
             newArr.push(fbObject[key]);
         });
       console.log(newArr)
-      that.setState({loading:false, userList: newArr });
+      that.setState({loading:false, userList: newArr, assignTo: newArr[0].name });
     });
   }
 
@@ -194,25 +195,26 @@ export class AssignDoc extends Component {
   _pickDocument = async () => {
     console.log('_pickDocument');
     let result = await DocumentPicker.getDocumentAsync({});
-    const { type, uri } = await DocumentPicker.getDocumentAsync({
-      copyToCacheDirectory: false,
-      type: '*/*',
-    });
+    // const { type, uri } = await DocumentPicker.getDocumentAsync({
+    //   copyToCacheDirectory: false,
+    //   type: '*/*',
+    // });
     // alert(result.uri);
     // console.log(result);
-    if (type === 'cancel') {
+    if (result.type === 'cancel') {
       return;
     }
-    console.log(type)
-    console.log('pickerResponse', uri);
-    if(type == 'success'){
+    // console.log(type)
+    console.log('pickerResponse', result);
+    if(result.type == 'success'){
       // const copyAsync = await FileSystem.copyAsync({from: result.uri, to: fileUri})
 
       // const read = await FileSystem.readAsStringAsync(fileUri)
       // const json = JSON.parse(read)
       // console.log({json})
 
-      // this.state.formValue.attachment = this.uriToBlob(result.uri);
+      this.state.formValue.attachment = result;
+      console.log(this.state.formValue.attachment)
       // const response = await fetch(result.uri);
       // this.state.formValue.attachment = await response.blob();
       // const blob = await response.blob();
@@ -223,42 +225,49 @@ export class AssignDoc extends Component {
       // console.log('fetchResponse', fetchResponse);
       // const blob = await fetchResponse.blob();
       // console.log('blob', blob);
-      await fetch(uri)
-                .then(response => response.blob())  //--> fetch the fileUri to blob
-                .then(blob => {
-                    // console.log(blob)		
-                    this.uploadToFirebase(blob,result.name).then(
-                          function(res) {
-                            console.log('##uploadToFirebase##')
-                            console.log(res)
-                            console.log('Upload file '+ result.name +' successfully.');
-                          }
-                        ).catch(
-                          function(errors) {
-                              let message = 'Upload file error'; // Default error message
-                              console.log(message);
-                              console.log(errors)
-                          }
-                        );   				
-                    // var reader = new FileReader();
-                    // reader.readAsDataURL(blob);		//--> The readAsDataURL method is used to read the contents of the specified Blob or File. 
-                    // reader.onloadend = () => {
-                    //     var base64 = reader.result;
-                    //     this.setState({
-                    //         fileUrl: uri,
-                    //         fileName: result.name,
-                    //         fileData: base64,                //--> put the set state on the onloadend method
-                    //     });
-                    //     console.log(base64);
-                    // };
-                })
-                .catch(error => console.error(error))   
-      this.state.file = result;
-      console.log(this.state.file)
+      // await fetch(uri)
+      //           .then(response => response.blob())  //--> fetch the fileUri to blob
+      //           .then(blob => {
+      //               // console.log(blob)		
+                    // this.uploadFile(result).then(
+                    //       function(res) {
+                    //         console.log('##uploadToFirebase##')
+                    //         console.log(res)
+                    //         console.log('Upload file '+ result.name +' successfully.');
+                    //       }
+                    //     ).catch(
+                    //       function(errors) {
+                    //           let message = 'Upload file error'; // Default error message
+                    //           console.log(message);
+                    //           console.log(errors)
+                    //       }
+                    //     );   				
+      //               // var reader = new FileReader();
+      //               // reader.readAsDataURL(blob);		//--> The readAsDataURL method is used to read the contents of the specified Blob or File. 
+      //               // reader.onloadend = () => {
+      //               //     var base64 = reader.result;
+      //               //     this.setState({
+      //               //         fileUrl: uri,
+      //               //         fileName: result.name,
+      //               //         fileData: base64,                //--> put the set state on the onloadend method
+      //               //     });
+      //               //     console.log(base64);
+      //               // };
+      //           })
+      //           .catch(error => console.error(error))   
+      // this.state.file = result;
+      // console.log(this.state.file)
     }else{
-      console.log('++ Upload error ++');
+      console.log('++ upload error ++');
       console.log(result)
     }
+  }
+
+  uploadFile = async(f) => {
+    const response = await fetch(f.uri);
+    const blob = await response.blob();
+    var ref = firebase.storage().ref().child("files/"+f.name);
+    return ref.put(blob);
   }
 
   uriToBlob = (uri) => {
@@ -308,9 +317,10 @@ export class AssignDoc extends Component {
             databaseRef.push({  metadataFile });
 
         }).catch(function(error) {
-          this.setState({
-              messag:`Upload error : ${error.message}`
-          })
+          console.log(JSON.stringify(error))
+          // this.setState({
+          //     message:`Upload error : ${error.message}`
+          // })
         });
         resolve(snapshot);
       }).catch((error)=>{
@@ -323,15 +333,39 @@ export class AssignDoc extends Component {
     console.log('submitForm')
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
-    var itemsRef = firebase.database().ref().child(`assignDoc`)
+    var itemsRef = firebase.database().ref().child(`assignDoc`);
     let formValues = this.state.formValue;
     formValues.selectedType = this.state.selectedType;
     formValues.assignTo = this.state.assignTo;
     formValues.updatedDate = new Date().toString();
     formValues.assignBy = displayName;
     console.log(formValues)
-    itemsRef.push(formValues)
-    this.assignPage();
+    itemsRef.push(formValues).then((snap) => {
+      const key = snap.key 
+      console.log('key ==> '+key)
+      // var historyRef = firebase.database().ref().child(`histories`);
+      var f = {uri : this.state.formValue.attachment.uri, name : key};
+      this.uploadFile(f).then(
+        function(res) {
+          console.log('##uploadToFirebase##')
+          console.log(JSON.stringify(res))
+          console.log('Upload file '+ key +' successfully.');
+        }
+      ).catch(
+        function(errors) {
+            let message = 'Upload file error'; // Default error message
+            console.log(message);
+            console.log(JSON.stringify(errors))
+        }
+      );  
+      this.assignPage();
+    }).catch(err => {
+      alert("เกิดข้อผิดพลาด")
+      console.log(JSON.stringify(err));
+    })
+    // var newID = itemsRef.name();
+    // console.log('newRef == '+newRef)
+    // console.log('newID == '+newID)
     // this.uploadToFirebase(formValues.attachment).then(
     //         function(res) {
     //           console.log(res)

@@ -5,6 +5,7 @@ import {
   View,
   Text,
   StatusBar,
+  Dimensions 
 } from 'react-native';
 
 import {
@@ -139,7 +140,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
-  }
+  },
+  pdf: {
+    width: Dimensions.get('window').width,
+    height: 500,
+    backgroundColor:'#000'
+  },
+  containerSA : {
+    flex: 1,
+    // marginTop: Constants.statusBarHeight,
+    marginHorizontal: 16
+  },
 });
 
 export {styles};

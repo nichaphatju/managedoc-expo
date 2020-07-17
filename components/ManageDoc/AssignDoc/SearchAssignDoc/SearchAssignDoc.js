@@ -8,7 +8,9 @@ import {
   StatusBar,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView
 } from 'react-native';
 
 import {
@@ -30,12 +32,14 @@ import {createStackNavigator} from 'react-navigation-stack';
 import * as Font from 'expo-font'
 import firebase from 'firebase';
 import ItemList from '../../ItemList';
+import {liststyles} from '../../liststyle';
 
 export class SearchAssignDocScreen extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
+        isLoading: false,
         searchString:'',
         loading: true,
         docs: [],
@@ -68,18 +72,30 @@ export class SearchAssignDocScreen extends Component {
       const fbObject = data.val();
         const newArr = [];
         Object.keys(fbObject).map( (key,index)=>{
-            console.log(key);
-            console.log("||");
-            console.log(index);
+            // console.log(key);
+            // console.log("||");
+            // console.log(index);
             // console.log(user)
             fbObject[key]['Id'] = key;
             var userInfo = firebase.auth().currentUser;
             var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+            var dt = that.convertDateTime(fbObject[key].updatedDate);
+            fbObject[key].updatedDate = dt;
+            console.log('>>'+dt)
             if(fbObject[key].status == 'assign' && displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
         });
       that.setState({loading:false, docs: newArr });
     });
     
+  }
+
+  convertDateTime(dtStr){
+    var dt = new Date(dtStr),
+    mnth = ("0" + (dt.getMonth() + 1)).slice(-2),
+    day = ("0" + dt.getDate()).slice(-2),
+    hr = ("0" + dt.getHours()).slice(-2),
+    min = ("0" + dt.getMinutes()).slice(-2);
+    return [day,mnth,dt.getFullYear()].join("/") + ' ' + hr +':'+min;
   }
 
   assignPage = () => {
@@ -133,45 +149,94 @@ export class SearchAssignDocScreen extends Component {
           </View>
           {/* <View style={styles.contentLayout}>
             <TouchableOpacity
-              style={styles.itemContentView}
-              onPress={() => this.assignPage()}>
+              style={styles.itemContentView}>
               <TouchableOpacity
-                style={styles.subItemTop}
-                onPress={() => this.assignPage()}>
+                style={styles.subItemTop}>
                 <Icon
                   name="account-circle"
                   style={styles.itemIcon}
-                  onPress={() => this.assignPage()}
                 />
                 <TouchableOpacity
                   style={styles.rowStyle}
                   onPress={() => this.assignPage()}>
-                  <Text style={styles.itemText}>ชื่อครูผู้รับ1</Text>
-                  <Text style={styles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+                  <Text style={styles.itemText}>{this.state.assignTo}</Text>
+                  <Text style={styles.itemTextDetail}>{doc.updatedDate}</Text>
                 </TouchableOpacity>
                 <Icon
                   name="remove-red-eye"
-                  style={styles.itemIcon}
-                  onPress={() => this.assignPage()}
+                  style={styles.itemIcon} 
                 />
                 <Text style={styles.redDot}/>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.subItemBottom}
-                onPress={() => this.assignPage()}>
-                <TouchableOpacity onPress={() => this.assignPage()}>
-                  <Text style={styles.itemTextTopic}>ชื่อเรื่อง</Text>
+                >
+                <TouchableOpacity >
+                  <Text style={styles.itemTextTopic}>{doc.topic}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             </TouchableOpacity>
           </View> */}
           <View style={styles.contentLayout}>
+            <FlatList
+                  data={this.state.docs}
+                  renderItem={({item}) => this.renderRow(item)}
+                  keyExtractor={(item, index) => item.Id}
+                  onRefresh={() => this.renderRefreshControl()}
+                  refreshing={this.state.isLoading}
+                  initialNumToRender={3}
+                  contentContainerStyle={{
+                      flexGrow: 0,
+                  }}
+              />
+            </View>             
+          {/* <View style={styles.contentLayout}>
             <ItemList docs={this.state.docs}/>
-          </View>
+          </View> */}
           <View style={styles.bottomFooter} />
         </View>
       );
     }
+  }
+
+
+  renderRefreshControl() {
+    this.setState({ isLoading: true })
+    // this.props.getPosts();
+  }
+  
+  renderRow = (doc) => {
+    return (
+      <View style={liststyles.contentLayout}>
+        <TouchableOpacity
+          style={liststyles.itemContentView}>
+          <TouchableOpacity
+            style={liststyles.subItemTop}>
+            <Icon
+              name="account-circle"
+              style={liststyles.itemIcon}
+            />
+            <TouchableOpacity
+              style={liststyles.rowStyle}>
+              <Text style={liststyles.itemText}>{doc.assignTo}</Text>
+              <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
+            </TouchableOpacity>
+            <Icon
+              name="remove-red-eye"
+              style={liststyles.itemIcon} 
+            />
+            <Text style={liststyles.redDot}/>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={liststyles.subItemBottom}
+            >
+            <TouchableOpacity >
+              <Text style={liststyles.itemTextTopic}>{doc.topic}</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
+    );
   }
 }
 
