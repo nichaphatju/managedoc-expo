@@ -92,13 +92,13 @@ export class AcceptDoc extends Component {
     ref.getDownloadURL().then(url => {
       console.log('url >> '+url)
       that.setState({pdfFileUrl:url})
-      // that.setstate.pdfFileUrl = url;
     })
-    // ref.on('value', snapshot => {
-    //   const val = snapshot.val();
-    //   console.log(val);
-    // });
   }
+
+  assignPage = () => {
+    console.log('assignPage');
+    this.props.navigation.navigate('ManageDoc');
+  };
 
   componentWillMount() {
     console.log('componentWillMount')
@@ -118,50 +118,43 @@ export class AcceptDoc extends Component {
     });
   }
 
-  updateData = () =>{
+  submitForm = () =>{
+    console.log('submitForm')
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var that = this;
-    if(this.state.sendType != '' && this.sendTo == ''){
+    if(this.state.sendType != '' && this.state.sendTo == ''){
       alert('กรุณาเลือกผู้รับเอกสารต่อ');
-      return;
-    }
-    console.log(that.recordData)
-    firebase.database().ref('assignDoc/' + that.recordData.key).set({
-      announceType : that.annouceType,
-      status: that.state.status
-    });
-    if(this.state.sendType != '' && this.sendTo != ''){
-      var itemsRef = firebase.database().ref().child(`assignDoc`);
-      let formValues = this.state.formValue;
-      formValues.selectedType = this.state.sendType;
-      formValues.assignTo = this.sendTo;
-      formValues.updatedDate = new Date().toString();
-      formValues.assignBy = displayName;
-      console.log(formValues)
-      itemsRef.push(formValues).then((snap) => {
-        const key = snap.key 
-        console.log('key ==> '+key)
-        // var historyRef = firebase.database().ref().child(`histories`);
-        var f = {uri : that.recordData.attachment.uri, name : key};
-        this.uploadFile(f).then(
-          function(res) {
-            console.log('##uploadToFirebase##')
-            console.log(JSON.stringify(res))
-            console.log('Upload file '+ key +' successfully.');
-          }
-        ).catch(
-          function(errors) {
-              let message = 'Upload file error'; // Default error message
-              console.log(message);
-              console.log(JSON.stringify(errors))
-          }
-        );  
-        this.assignPage();
-      }).catch(err => {
-        alert("เกิดข้อผิดพลาด")
-        console.log(JSON.stringify(err));
-      })
+    }else{
+      console.log('recordData ',that.state.recordData)
+      var oldrecord = that.state.recordData;
+      oldrecord.announceType = that.state.annouceType;
+      oldrecord.status = that.state.status;
+      var docName = that.state.recordData.key;
+      if(that.state.recordData.docName != null && that.state.recordData.docName !== undefined && that.state.recordData.docName != '') docName = that.state.recordData.docName;
+      firebase.database().ref('assignDoc/' + that.state.recordData.key).update({
+        announceType : that.state.annouceType,
+        status: that.state.status
+      });
+      if(this.state.sendType != '' && this.state.sendTo != ''){
+        var itemsRef = firebase.database().ref().child(`assignDoc`);
+        let formValues = that.state.recordData[that.state.recordData.key];
+        formValues.selectedType = this.state.sendType;
+        formValues.assignTo = this.state.sendTo;
+        formValues.updatedDate = new Date().toString();
+        formValues.assignBy = displayName;
+        formValues.docName = that.state.recordData.key;
+        formValues.isSendFrom = true;
+        formValues.status = 'assign';
+        console.log(formValues)
+        itemsRef.push(formValues).then((snap) => {
+          const key = snap.key 
+          this.assignPage();
+        }).catch(err => {
+          alert("เกิดข้อผิดพลาด")
+          console.log(JSON.stringify(err));
+        })
+      }
     }
 
   }

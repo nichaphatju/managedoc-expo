@@ -343,6 +343,7 @@ export class AssignDoc extends Component {
     itemsRef.push(formValues).then((snap) => {
       const key = snap.key 
       console.log('key ==> '+key)
+      console.log('attachment ==> ',this.state.formValue.attachment)
       // var historyRef = firebase.database().ref().child(`histories`);
       var f = {uri : this.state.formValue.attachment.uri, name : key};
       this.uploadFile(f).then(
@@ -363,78 +364,11 @@ export class AssignDoc extends Component {
       alert("เกิดข้อผิดพลาด")
       console.log(JSON.stringify(err));
     })
-    // var newID = itemsRef.name();
-    // console.log('newRef == '+newRef)
-    // console.log('newID == '+newID)
-    // this.uploadToFirebase(formValues.attachment).then(
-    //         function(res) {
-    //           console.log(res)
-    //           let errorMessage = 'Upload file error';
-    //           console.log(message);
-    //       }
-    // ).catch(
-    //   function(errors) {
-    //       let message = 'Upload file error'; // Default error message
-    //       console.log(message);
-    //   }
-    // );
   }
 
-  // handleInit() {
-  //   // handle init file upload here
-  //   console.log('now initialised', this.pond);
-  // }
+  generateDocId(){
 
-  // handleProcessing(fieldName, file, metadata, load, error, progress, abort) {
-  //   // handle file upload here
-  //   console.log(" handle file upload here");
-  //   console.log(file);
-
-  //   const fileUpload = file;
-  //   const storageRef = firebase.storage().ref(`filepond/${file.name}`);
-  //   const task = storageRef.put(fileUpload)
-
-  //     task.on(`state_changed` , (snapshort) => {
-  //         console.log(snapshort.bytesTransferred, snapshort.totalBytes)
-  //         let percentage = (snapshort.bytesTransferred / snapshort.totalBytes) * 100;
-  //         //Process
-  //         this.setState({
-  //             uploadValue:percentage
-  //         })
-  //     } , (error) => {
-  //         //Error
-  //         this.setState({
-  //             messag:`Upload error : ${error.messag}`
-  //         })
-  //     } , () => {
-  //       //Success
-  //       this.setState({
-  //           messag:`Upload Success`,
-  //           picture: task.snapshot.downloadURL //เผื่อนำไปใช้ต่อในการแสดงรูปที่ Upload ไป
-  //       })
-
-  //       //Get metadata
-  //       storageRef.getMetadata().then((metadata) => {
-  //           // Metadata now contains the metadata for 'filepond/${file.name}'
-  //           let metadataFile = { 
-  //               name: metadata.name, 
-  //               size: metadata.size, 
-  //               contentType: metadata.contentType, 
-  //               fullPath: metadata.fullPath, 
-  //               downloadURLs: metadata.downloadURLs[0], 
-  //           }
-
-  //           //Process save metadata
-  //           const databaseRef = firebase.database().ref('/filepond');
-  //           databaseRef.push({  metadataFile });
-
-  //       }).catch(function(error) {
-  //         this.setState({
-  //             messag:`Upload error : ${error.message}`
-  //         })
-  //       });
-  //   })
-  // }
+  }
 
   assignPage = () => {
     console.log('assignPage');
