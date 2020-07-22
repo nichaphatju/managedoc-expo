@@ -84,8 +84,14 @@ export class AcceptDoc extends Component {
   async componentDidMount() {
     var that = this;
     console.log('componentDidMount')
-    console.log(this.props.navigation.state.params.docId)
-    firebase.database().ref('assignDoc/'+this.props.navigation.state.params.docId).on('value', function(data) {
+    console.log(this.props.navigation.state.params.docId);
+    var assignDocRef = firebase.database().ref('assignDoc');
+    assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
+      const arrReslt = Object.values(data.val());
+      console.log('arrReslt');
+      console.log(arrReslt);
+      // console.log('VAL');
+      // console.log(data.val()[that.props.navigation.state.params.docId])
       that.setState({recordData:data})
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
@@ -110,7 +116,7 @@ export class AcceptDoc extends Component {
         const newArr = [];
         newArr.push({ key: '' , name : 'กรุณาเลือก'})
         Object.keys(fbObject).map( (key,index)=>{
-            // fbObject[key]['username'] = key;
+            fbObject[key]['key'] = key;
             newArr.push(fbObject[key]);
         });
       console.log(newArr)
@@ -120,6 +126,9 @@ export class AcceptDoc extends Component {
 
   submitForm = () =>{
     console.log('submitForm')
+  }
+
+  updateData = () =>{
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var that = this;
@@ -156,6 +165,43 @@ export class AcceptDoc extends Component {
         })
       }
     }
+    
+    // var oldRecordData = that.state.recordData;
+    // console.log('recordData :: ',oldRecordData)
+    // console.log('Topic >>> ',that.state.recordData.key);
+    // let assignDocRef = firebase.database().ref('/assignDoc');
+    // assignDocRef.child(oldRecordData.key).update({
+    //   announceType : that.state.annouceType,
+    //   status: that.state.status,
+    //   sendType : that.state.sendType,
+    //   sendTo: that.state.sendTo,
+    // }).then(() => {
+    //   if(that.state.sendType != '' && that.state.sendTo != ''){
+    //     console.log('oldRecordData >>> ',oldRecordData.topic);
+    //     var itemsRef = firebase.database().ref().child(`assignDoc`);
+    //     /* For send to another person */
+    //     let newDocRecord = that.state.formValue;
+    //     newDocRecord.topic = oldRecordData.topic;
+    //     newDocRecord.selectedType = that.state.sendType;
+    //     newDocRecord.assignBy = displayName;
+    //     newDocRecord.assignTo = that.state.sendTo;
+    //     newDocRecord.fileName = oldRecordData.key;
+    //     // newDocRecord.attachment = that.state.recordData.attachment;
+    //     newDocRecord.updatedDate = new Date().toString();
+    //     console.log('New Doc Record ',newDocRecord)
+    //     itemsRef.push(newDocRecord).then((snap) => {
+    //       const key = snap.key 
+    //       console.log('key ==> '+key)
+    //       this.assignPage();
+    //     }).catch(err => {
+    //       alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
+    //       console.log(JSON.stringify(err));
+    //     })
+    //   }
+    // }).catch(err => {
+    //   console.log('ERROR when updating record.')
+    //   console.error(err);
+    // })
 
   }
 
@@ -179,7 +225,7 @@ export class AcceptDoc extends Component {
           <View>
             <Text 
                 style={styles.subHeaderText}
-                onPress={this.submitForm} >บันทึก</Text>
+                onPress={this.updateData} >บันทึก</Text>
           </View>
         </View>
         <View style={styles.contentLayout}>
