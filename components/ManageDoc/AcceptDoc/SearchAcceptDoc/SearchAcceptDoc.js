@@ -34,12 +34,14 @@ export class SearchAcceptDocScreen extends Component {
 
   constructor(props) {
     super(props)
+    this.onChangeSearchFilter = this.onChangeSearchFilter.bind(this);
 
     this.state = {
         isLoading: false,
         searchString:'',
         loading: true,
-        docs: []
+        docs: [],
+        tmpDocs: []
     }
   }
 
@@ -70,7 +72,7 @@ export class SearchAcceptDocScreen extends Component {
             fbObject[key].updatedDate = dt;
             if(displayName == fbObject[key].assignTo) newArr.push(fbObject[key]);
         });
-      that.setState({loading:false, docs: newArr });
+      that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
   }
 
@@ -83,12 +85,23 @@ export class SearchAcceptDocScreen extends Component {
     return [day,mnth,dt.getFullYear()].join("/") + ' ' + hr +':'+min;
   }
 
-  onChangeSearchFilter = (searchString) =>{
-    this.setState({loading:true,searchString:searchString});
-    this.state.docs.filter((doc) => {
-      doc.topic == searchString;
+  onChangeSearchFilter = (e) =>{
+    console.log('searchString')
+    console.log(e.nativeEvent.text)
+    var searchText = e.nativeEvent.text;
+    this.setState({loading:true,searchString:searchText});
+    var allData = this.state.tmpDocs;
+    var docs = allData.filter((doc) => {
+      searchText == '' || searchText == null || searchText === undefined || doc.topic == searchText;
     })
-    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+    console.log(docs)
+    this.setState({loading:false,searchString:searchText,docs: docs});
+  }
+
+  onSearchKeyPress(e){
+    this.setState({
+      searchString: e.target.value
+    });
   }
 
   listenForDocs(tmpDocs) {
@@ -170,9 +183,7 @@ export class SearchAcceptDocScreen extends Component {
               style={styles.inputText}
               placeholder="ค้นหาเอกสาร"
               placeholderTextColor="#FFF"
-              onChangeText={(searchString) => {
-                this.setState({searchString});
-              }}
+              onChange={this.onChangeSearchFilter}
               underlineColorAndroid="transparent"
             />
           </View>
