@@ -331,6 +331,7 @@ export class AssignDoc extends Component {
 
   submitForm = () =>{
     console.log('submitForm')
+    var that = this;
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var itemsRef = firebase.database().ref().child(`assignDoc`);
@@ -343,23 +344,22 @@ export class AssignDoc extends Component {
     itemsRef.push(formValues).then((snap) => {
       const key = snap.key 
       console.log('key ==> '+key)
-      console.log('attachment ==> ',this.state.formValue.attachment)
+      console.log('attachment ==> ',that.state.formValue.attachment)
       // var historyRef = firebase.database().ref().child(`histories`);
-      var f = {uri : this.state.formValue.attachment.uri, name : key};
-      this.uploadFile(f).then(
+      var f = {uri : that.state.formValue.attachment.uri, name : key};
+      that.uploadFile(f).then(
         function(res) {
           console.log('##uploadToFirebase##')
-          console.log(JSON.stringify(res))
           console.log('Upload file '+ key +' successfully.');
+          that.assignPage();
         }
-      ).catch(
-        function(errors) {
+      ).catch(err => {
             let message = 'Upload file error'; // Default error message
+            alert('Upload file error. Pleas try again later..')
             console.log(message);
-            console.log(JSON.stringify(errors))
+            console.log(JSON.stringify(err))
         }
       );  
-      this.assignPage();
     }).catch(err => {
       alert("เกิดข้อผิดพลาด")
       console.log(JSON.stringify(err));

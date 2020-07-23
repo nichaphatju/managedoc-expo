@@ -63,9 +63,10 @@ export class AcceptDoc extends Component {
       pdfFileUrl:"",
       recordData:{},
       annouceType: "",  // ทราบ,เห็นชอบ
-      status: "",     // สถานะ
+      status: "done",     // สถานะ
       sendType:"",    // แจ้ง,มอบ
-      sendTo:""
+      sendTo:"",
+      docKey:""
     };
   }
 
@@ -76,8 +77,8 @@ export class AcceptDoc extends Component {
   }
 
   loadStatusOptions() {
-    return this.state.statusOptions.map((user) => (
-      <Picker.Item key={user.key} label={user.name} value={user.key} />
+    return this.state.statusOptions.map((option) => (
+      <Picker.Item key={option.key} label={option.name} value={option.key} />
     ));
   }
 
@@ -85,14 +86,15 @@ export class AcceptDoc extends Component {
     var that = this;
     console.log('componentDidMount')
     console.log(this.props.navigation.state.params.docId);
+    that.setState({docKey: this.props.navigation.state.params.docId});
     var assignDocRef = firebase.database().ref('assignDoc');
     assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
       const arrReslt = Object.values(data.val());
       console.log('arrReslt');
       console.log(arrReslt);
-      // console.log('VAL');
-      // console.log(data.val()[that.props.navigation.state.params.docId])
-      that.setState({recordData:data})
+      console.log('VAL');
+      console.log(data.val().topic)
+      that.setState({recordData:data.val()})
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
     ref.getDownloadURL().then(url => {
@@ -129,6 +131,7 @@ export class AcceptDoc extends Component {
   }
 
   updateData = () =>{
+    var that = this;
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var that = this;
@@ -136,29 +139,32 @@ export class AcceptDoc extends Component {
       alert('กรุณาเลือกผู้รับเอกสารต่อ');
     }else{
       console.log('recordData ',that.state.recordData)
+      console.log('DOC KEY ::: '+that.state.docKey);
       var oldrecord = that.state.recordData;
       oldrecord.announceType = that.state.annouceType;
       oldrecord.status = that.state.status;
-      var docName = that.state.recordData.key;
-      if(that.state.recordData.docName != null && that.state.recordData.docName !== undefined && that.state.recordData.docName != '') docName = that.state.recordData.docName;
-      firebase.database().ref('assignDoc/' + that.state.recordData.key).update({
+      var docName = that.state.docKey;
+      if(oldrecord.docName != null && oldrecord.docName !== undefined && oldrecord.docName != '') docName = oldrecord.docName;
+      firebase.database().ref('assignDoc/' + that.state.docKey).update({
         announceType : that.state.annouceType,
         status: that.state.status
       });
-      if(this.state.sendType != '' && this.state.sendTo != ''){
+      if(that.state.sendType != '' && that.state.sendTo != ''){
         var itemsRef = firebase.database().ref().child(`assignDoc`);
-        let formValues = that.state.recordData[that.state.recordData.key];
-        formValues.selectedType = this.state.sendType;
-        formValues.assignTo = this.state.sendTo;
-        formValues.updatedDate = new Date().toString();
-        formValues.assignBy = displayName;
-        formValues.docName = that.state.recordData.key;
-        formValues.isSendFrom = true;
-        formValues.status = 'assign';
-        console.log(formValues)
-        itemsRef.push(formValues).then((snap) => {
+        let newDocRecord = oldrecord;
+        newDocRecord.topic = oldrecord.topic;
+        newDocRecord.selectedType = that.state.sendType;
+        newDocRecord.assignTo = that.state.sendTo;
+        newDocRecord.updatedDate = new Date().toString();
+        newDocRecord.assignBy = displayName;
+        newDocRecord.docName = docName;
+        newDocRecord.attachment = oldrecord.attachment;
+        newDocRecord.isSendFrom = true;
+        newDocRecord.status = 'assign';
+        console.log('newDocRecord ',newDocRecord)
+        itemsRef.push(newDocRecord).then((snap) => {
           const key = snap.key 
-          this.assignPage();
+          that.assignPage();
         }).catch(err => {
           alert("เกิดข้อผิดพลาด")
           console.log(JSON.stringify(err));

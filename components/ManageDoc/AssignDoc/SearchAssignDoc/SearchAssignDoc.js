@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  YellowBox
 } from 'react-native';
 
 import {
@@ -33,8 +34,18 @@ import * as Font from 'expo-font'
 import firebase from 'firebase';
 import ItemList from '../../ItemList';
 import {liststyles} from '../../liststyle';
+import _ from 'lodash';
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
 
 export class SearchAssignDocScreen extends Component {
+  
   constructor(props) {
     super(props)
 
@@ -68,22 +79,24 @@ export class SearchAssignDocScreen extends Component {
     // });
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
-      const arrReslt = Object.values(data.val());
-      const fbObject = data.val();
-        const newArr = [];
-        Object.keys(fbObject).map( (key,index)=>{
-            // console.log(key);
-            // console.log("||");
-            // console.log(index);
-            // console.log(user)
-            fbObject[key]['Id'] = key;
-            var userInfo = firebase.auth().currentUser;
-            var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
-            var dt = that.convertDateTime(fbObject[key].updatedDate);
-            fbObject[key].updatedDate = dt;
-            console.log('>>'+dt)
-            if(fbObject[key].status == 'assign' && displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
-        });
+      const newArr = [];
+      if(data.val() != null && data.val() !== undefined){
+        const arrReslt = Object.values(data.val());
+        const fbObject = data.val();
+          Object.keys(fbObject).map( (key,index)=>{
+              // console.log(key);
+              // console.log("||");
+              // console.log(index);
+              // console.log(user)
+              fbObject[key]['Id'] = key;
+              var userInfo = firebase.auth().currentUser;
+              var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+              var dt = that.convertDateTime(fbObject[key].updatedDate);
+              fbObject[key].updatedDate = dt;
+              console.log('>>'+dt)
+              if(fbObject[key].status == 'assign' && displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
+          });
+      }
       that.setState({loading:false, docs: newArr });
     });
     
