@@ -48,13 +48,15 @@ export class SearchAssignDocScreen extends Component {
   
   constructor(props) {
     super(props)
+    this.onChangeSearchFilter = this.onChangeSearchFilter.bind(this);
 
     this.state = {
         isLoading: false,
         searchString:'',
         loading: true,
         docs: [],
-        currentUser: {}
+        currentUser: {},
+        tmpDocs: []
     }
   }
 
@@ -94,10 +96,10 @@ export class SearchAssignDocScreen extends Component {
               var dt = that.convertDateTime(fbObject[key].updatedDate);
               fbObject[key].updatedDate = dt;
               console.log('>>'+dt)
-              if(fbObject[key].status == 'assign' && displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
+              if(displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
           });
       }
-      that.setState({loading:false, docs: newArr });
+      that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
     
   }
@@ -116,12 +118,18 @@ export class SearchAssignDocScreen extends Component {
     this.props.navigation.navigate('AssignDoc');
   };
 
-  onChangeSearchFilter = (searchString) =>{
-    this.setState({loading:true,searchString:searchString});
-    this.state.docs.filter((doc) => {
-      doc.topic == searchString;
-    })
-    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+  onChangeSearchFilter = (e) =>{
+    var searchText = e.nativeEvent.text;
+    this.setState({loading:true,searchString:searchText});
+    var allData = this.state.tmpDocs;
+    console.log(allData.length)
+    var docs = allData.filter((doc) => 
+      searchText == '' || searchText == null || searchText === undefined 
+      || doc.topic == searchText || doc.topic.toLowerCase().includes(searchText.toLowerCase())
+      || doc.assignTo == searchText || doc.assignTo.toLowerCase().includes(searchText.toLowerCase())
+    )
+    console.log(docs)
+    this.setState({loading:false,searchString:searchText,docs: docs});
   }
 
   render() {
@@ -146,7 +154,7 @@ export class SearchAssignDocScreen extends Component {
                 style={styles.inputText}
                 placeholder="ค้นหาเอกสาร"
                 placeholderTextColor="#FFF"
-                onChangeText={this.onChangeSearchFilter}
+                onChange={this.onChangeSearchFilter}
                 underlineColorAndroid="transparent"
               />
             </View>

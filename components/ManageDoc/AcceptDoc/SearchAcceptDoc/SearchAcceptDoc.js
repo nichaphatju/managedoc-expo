@@ -91,9 +91,12 @@ export class SearchAcceptDocScreen extends Component {
     var searchText = e.nativeEvent.text;
     this.setState({loading:true,searchString:searchText});
     var allData = this.state.tmpDocs;
-    var docs = allData.filter((doc) => {
-      searchText == '' || searchText == null || searchText === undefined || doc.topic == searchText;
-    })
+    console.log(allData.length)
+    var docs = allData.filter((doc) => 
+      searchText == '' || searchText == null || searchText === undefined 
+      || doc.topic == searchText || doc.topic.toLowerCase().includes(searchText.toLowerCase())
+      || doc.assignTo == searchText || doc.assignTo.toLowerCase().includes(searchText.toLowerCase())
+    )
     console.log(docs)
     this.setState({loading:false,searchString:searchText,docs: docs});
   }
