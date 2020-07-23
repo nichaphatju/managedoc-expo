@@ -220,6 +220,16 @@ export class SearchAssignDocScreen extends Component {
     }
   }
 
+  getDotStyle(doc) {
+    if(doc.status == null || doc.status == '' || doc.status === undefined) {
+      return liststyles.redDot;
+    } else if(doc.status == 'done') {
+      return liststyles.greenDot;
+    } else {
+      return liststyles.yellowDot;
+    }
+  }
+
 
   renderRefreshControl() {
     this.setState({ isLoading: true })
@@ -246,7 +256,7 @@ export class SearchAssignDocScreen extends Component {
               name="remove-red-eye"
               style={liststyles.itemIcon} 
             />
-            <Text style={liststyles.redDot}/>
+            <Text style={doc.status == null || doc.status == '' || doc.status === undefined || doc.status == 'assign' ? liststyles.redDot : doc.status == 'done' ? liststyles.greenDot : liststyles.yellowDot}/>
           </TouchableOpacity>
           <TouchableOpacity
             style={liststyles.subItemBottom}

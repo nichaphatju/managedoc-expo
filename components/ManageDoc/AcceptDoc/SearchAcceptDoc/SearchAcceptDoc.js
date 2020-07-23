@@ -153,7 +153,7 @@ export class SearchAcceptDocScreen extends Component {
               name="remove-red-eye"
               style={liststyles.itemIcon} 
             />
-            <Text style={liststyles.redDot}/>
+            <Text style={doc.status == null || doc.status == '' || doc.status === undefined || doc.status == 'assign' ? liststyles.redDot : doc.status == 'done' ? liststyles.greenDot : liststyles.yellowDot}/>
           </TouchableOpacity>
           <TouchableOpacity
             style={liststyles.subItemBottom}
