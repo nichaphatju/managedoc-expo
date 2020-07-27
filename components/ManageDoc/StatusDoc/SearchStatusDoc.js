@@ -85,9 +85,11 @@ export class SearchStatusDocScreen extends Component {
     this.setState({loading:false,searchString:searchText,docs: docs});
   }
 
-  statusPage = () => {
+  statusPage = (docId) => {
     console.log('statusPage');
-    this.props.navigation.navigate('StatusDoc');
+    this.props.navigation.navigate('StatusDoc',{
+      docId: docId,
+    });
   };
 
   listenForDocs(tmpDocs) {
@@ -117,18 +119,18 @@ export class SearchStatusDocScreen extends Component {
       <View style={liststyles.contentLayout}>
         <TouchableOpacity
           style={liststyles.itemContentView}
-          onPress={() => this.statusPage()}>
+          onPress={() => this.statusPage(doc.Id)}>
           <TouchableOpacity
             style={liststyles.subItemTop}
-            onPress={() => this.statusPage()}>
+            onPress={() => this.statusPage(doc.Id)}>
             <Icon
               name="account-circle"
               style={liststyles.itemIcon}
-              onPress={() => this.statusPage()}
+              onPress={() => this.statusPage(doc.Id)}
             />
             <TouchableOpacity
               style={liststyles.rowStyle}
-              onPress={() => this.statusPage()}>
+              onPress={() => this.statusPage(doc.Id)}>
               <Text style={liststyles.itemText}>{doc.assignTo}</Text>
               <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
@@ -242,14 +244,19 @@ export class SearchStatusDocScreen extends Component {
 
 const SearchStatusNavigator = createStackNavigator(
   {
-    SearchStatusDoc: {screen: SearchStatusDocScreen},
+    SearchStatusDoc: {
+        screen: SearchStatusDocScreen
+      },
     // AssignDoc: {
     //   screen: AssignDoc,
     //   navigationOptions: {
     //     headerShown: false,
     //   },
     // },
-    StatusDoc: {screen: StatusDoc},
+    StatusDoc: {screen: StatusDoc,
+      navigationOptions: {
+        headerShown: false,
+      },},
   },
   {
     initialRouteName: 'SearchStatusDoc',

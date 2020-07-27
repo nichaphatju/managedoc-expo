@@ -345,4 +345,26 @@ export class AcceptDoc extends Component {
   }
 }
 
+// const AcceptDocNavigator = createStackNavigator(
+//   {
+//     AcceptDoc: {
+//       screen: AcceptDocScreen,
+//       navigationOptions: {
+//         headerShown: false,
+//       },
+//     },
+//     SearchAcceptDoc: {
+//       screen: SearchAcceptDoc,
+//       navigationOptions: {
+//         headerShown: false,
+//       },
+//     },
+//   },
+//   {
+//     initialRouteName: 'SearchAcceptDoc',
+//   },
+// );
+
+// const AcceptDoc = createAppContainer(AcceptDocNavigator);
+
 export default AcceptDoc;

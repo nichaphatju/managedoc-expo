@@ -5,6 +5,7 @@ import {
     View,
     Text,
     StatusBar,
+    Dimensions
   } from 'react-native';
   
   import {
@@ -23,7 +24,7 @@ import {
       // paddingTop: 20,
     },
     headerLayout: {
-      flex: 1.5,
+      flex: 0.6,
       backgroundColor: '#ff6600',
       justifyContent: 'center',
     },
@@ -35,7 +36,7 @@ import {
       textAlign: 'center',
     },
     subHeaderLayout: {
-      flex: 0.9,
+      flex: 0.3,
       backgroundColor: '#FF9934',
       flexDirection: 'row-reverse',
       alignItems: 'center',
@@ -50,10 +51,17 @@ import {
       marginRight: 10
     },
     contentLayout: {
-      flex: 10,
+      flex: 0.6,
       alignItems: 'center',
       paddingTop: 10,
       flexDirection: 'column',
+    },
+    headLabelText: {
+      flex: 1,
+      fontFamily: 'THSarabunNew Bold',
+      color: '#ff6600',
+      fontSize: 28,
+      // textAlignVertical: 'center',
     },
     labelText: {
       flex: 0.3,
@@ -89,7 +97,7 @@ import {
       textAlign: 'center',
     },
     bottomFooter: {
-      flex: 0.2,
+      flex: 0.1,
       backgroundColor: '#ff6600',
     },
     checkBoxRoot: {
@@ -139,7 +147,12 @@ import {
       paddingHorizontal: 10,
       flexDirection: 'row',
       alignItems: 'center',
-    }
+    },
+    pdf: {
+      width: Dimensions.get('window').width,
+      height: 500,
+      backgroundColor:'#000'
+    },
   });
   
   export {styles};  
