@@ -38,18 +38,35 @@ export class SearchStatusDocScreen extends Component {
     let that = this;
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
-      const arrReslt = Object.values(data.val());
-      const fbObject = data.val();
-        const newArr = [];
-        Object.keys(fbObject).map( (key,index)=>{
-            console.log(key);
-            console.log("||");
-            console.log(index);
-            fbObject[key]['Id'] = key;
-            newArr.push(fbObject[key]);
-        });
+      const newArr = [];
+      if(data.val() != null && data.val() !== undefined){
+        const arrReslt = Object.values(data.val());
+        const fbObject = data.val();
+          Object.keys(fbObject).map( (key,index)=>{
+              // console.log(key);
+              // console.log("||");
+              // console.log(index);
+              // console.log(user)
+              fbObject[key]['Id'] = key;
+              var userInfo = firebase.auth().currentUser;
+              var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+              var dt = that.convertDateTime(fbObject[key].updatedDate);
+              fbObject[key].updatedDate = dt;
+              console.log('>>'+dt)
+              newArr.push(fbObject[key]);
+          });
+      }
       that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
+  }
+
+  convertDateTime(dtStr){
+    var dt = new Date(dtStr),
+    mnth = ("0" + (dt.getMonth() + 1)).slice(-2),
+    day = ("0" + dt.getDate()).slice(-2),
+    hr = ("0" + dt.getHours()).slice(-2),
+    min = ("0" + dt.getMinutes()).slice(-2);
+    return [day,mnth,dt.getFullYear()].join("/") + ' ' + hr +':'+min;
   }
 
   onChangeSearchFilter = (e) =>{
@@ -112,14 +129,14 @@ export class SearchStatusDocScreen extends Component {
             <TouchableOpacity
               style={liststyles.rowStyle}
               onPress={() => this.statusPage()}>
-              <Text style={liststyles.itemText}>{doc.selectedUser}</Text>
-              <Text style={liststyles.itemTextDetail}>วันนี้ 11.30 น.</Text>
+              <Text style={liststyles.itemText}>{doc.assignTo}</Text>
+              <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
             <Icon
               name="remove-red-eye"
               style={liststyles.itemIcon} 
             />
-            <Text style={liststyles.redDot}/>
+            <Text style={doc.status == null || doc.status == '' || doc.status === undefined || doc.status == 'assign' ? liststyles.redDot : doc.status == 'done' ? liststyles.greenDot : liststyles.yellowDot}/>
           </TouchableOpacity>
           <TouchableOpacity
             style={liststyles.subItemBottom}
