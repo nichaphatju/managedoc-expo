@@ -79,6 +79,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     textAlign: 'center',
   },
+  column: {
+    flex: 1,
+    marginHorizontal: 10,
+    marginVertical: 10,
+    flexDirection: 'row',
+    textAlign: 'center',
+  },
   bottomFooter: {
     flex: 0.2,
     backgroundColor: '#ff6600',
@@ -98,6 +105,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   chkBoxFileNameText: {
+    flex: 5,
     fontFamily: 'THSarabunNew Bold',
     fontSize: 18,
     marginTop: 5,
@@ -137,7 +145,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
-  }
+  },
+  removeIcon: {
+    flex: 1,
+    fontFamily: 'THSarabunNew Bold',
+    color: '#FF9934',
+    fontSize: 32,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    borderRadius: 30,
+  },
 });
 
 export {styles};

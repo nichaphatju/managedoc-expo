@@ -43,6 +43,7 @@ import firebase from 'firebase';
 import { FileSystem } from 'expo-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
 // import { FilePond, File, registerPlugin } from 'react-filepond';
+import renderIf from '../renderIf';
 
 export class AssignDoc extends Component {
   tabs = [
@@ -114,6 +115,7 @@ export class AssignDoc extends Component {
       uploadValue: 0, //ใช้เพื่อดู Process การ Upload
       filesMetadata:[], //ใช้เพื่อรับข้อมูล Metadata จาก Firebase
       rows:  [], //ใช้วาด DataTable
+      fileName:''
     };
   }
 
@@ -192,6 +194,11 @@ export class AssignDoc extends Component {
     this.setState({file: file, fileContents: event.target.result});
   }
 
+  removeDocument = () => {
+    this.state.formValue.attachment = {};
+    this.setState({fileName : ''});
+  }
+
   _pickDocument = async () => {
     console.log('_pickDocument');
     let result = await DocumentPicker.getDocumentAsync({});
@@ -213,6 +220,7 @@ export class AssignDoc extends Component {
       // const json = JSON.parse(read)
       // console.log({json})
 
+      this.setState({fileName : result.name});
       this.state.formValue.attachment = result;
       console.log(this.state.formValue.attachment)
       // const response = await fetch(result.uri);
@@ -341,29 +349,35 @@ export class AssignDoc extends Component {
     formValues.updatedDate = new Date().toString();
     formValues.assignBy = displayName;
     console.log(formValues)
-    itemsRef.push(formValues).then((snap) => {
-      const key = snap.key 
-      console.log('key ==> '+key)
-      console.log('attachment ==> ',that.state.formValue.attachment)
-      // var historyRef = firebase.database().ref().child(`histories`);
-      var f = {uri : that.state.formValue.attachment.uri, name : key};
-      that.uploadFile(f).then(
-        function(res) {
-          console.log('##uploadToFirebase##')
-          console.log('Upload file '+ key +' successfully.');
-          that.assignPage();
-        }
-      ).catch(err => {
-            let message = 'Upload file error'; // Default error message
-            alert('Upload file error. Pleas try again later..')
-            console.log(message);
-            console.log(JSON.stringify(err))
-        }
-      );  
-    }).catch(err => {
-      alert("เกิดข้อผิดพลาด")
-      console.log(JSON.stringify(err));
-    })
+    if(formValues.attachment.uri === undefined || formValues.attachment.uri == null || formValues.attachment.uri ==''){
+      alert('กรุณาแนบเอกสารก่อนบันทึก');
+    }else if(formValues.topic === undefined || formValues.topic == null || formValues.topic ==''){
+      alert('กรุณาระบุเรื่อง');
+    }else{
+      itemsRef.push(formValues).then((snap) => {
+        const key = snap.key 
+        console.log('key ==> '+key)
+        console.log('attachment ==> ',that.state.formValue.attachment)
+        // var historyRef = firebase.database().ref().child(`histories`);
+        var f = {uri : that.state.formValue.attachment.uri, name : key};
+        that.uploadFile(f).then(
+          function(res) {
+            console.log('##uploadToFirebase##')
+            console.log('Upload file '+ key +' successfully.');
+            that.assignPage();
+          }
+        ).catch(err => {
+              let message = 'Upload file error'; // Default error message
+              alert('Upload file error. Pleas try again later..')
+              console.log(message);
+              console.log(JSON.stringify(err))
+          }
+        );  
+      }).catch(err => {
+        alert("เกิดข้อผิดพลาด")
+        console.log(JSON.stringify(err));
+      })
+    }
   }
 
   generateDocId(){
@@ -489,8 +503,18 @@ export class AssignDoc extends Component {
               <TouchableOpacity onPress={() => this._pickDocument()}>
                 <Text style={styles.chkBoxText}>แนบเอกสาร</Text>
               </TouchableOpacity>
-              <Text style={styles.chkBoxFileNameText}>{this.state.file.name}</Text>
           </TouchableOpacity>
+          </View>
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.column}>
+                <Text style={styles.chkBoxFileNameText}>{this.state.fileName}</Text>
+                {renderIf(this.state.fileName != '' && this.state.fileName !== undefined, 
+                  <Icon
+                    name="delete"
+                    style={styles.removeIcon}
+                    onPress={() => this.removeDocument()} />
+                  )}
+            </TouchableOpacity>
           </View>
         </View>
         {/* <BottomNavigation
