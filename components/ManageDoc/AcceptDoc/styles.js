@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     // paddingTop: 20,
   },
   headerLayout: {
-    flex: 1.5,
+    flex: 0.6,
     backgroundColor: '#ff6600',
     justifyContent: 'center',
   },
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subHeaderLayout: {
-    flex: 0.9,
+    flex: 0.3,
     backgroundColor: '#FF9934',
     flexDirection: 'row-reverse',
     alignItems: 'center',
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   contentLayout: {
-    flex: 10,
+    flex: 2.7,
     alignItems: 'center',
     paddingTop: 10,
     flexDirection: 'column',
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomFooter: {
-    flex: 0.2,
+    flex: 0.05,
     backgroundColor: '#ff6600',
   },
   checkBoxRoot: {

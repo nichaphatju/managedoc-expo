@@ -235,19 +235,21 @@ export class AcceptDoc extends Component {
           </View>
         </View>
         <View style={styles.contentLayout}>
-        <SafeAreaView style={styles.containerSA}>
-          <View style={{flex:1,justifyContent:'center'}}>
-                {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '', 
-                    <PDFReader
-                      style={styles.pdf}
-                      source={{
-                        uri: this.state.pdfFileUrl,
-                      }}
-                      withScroll={true}
-                  />
-                )}
-          </View>
+          <SafeAreaView style={styles.containerSA}>
+            <View style={{flex:1,justifyContent:'center'}}>
+                  {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '', 
+                      <PDFReader
+                        style={styles.pdf}
+                        source={{
+                          uri: this.state.pdfFileUrl,
+                        }}
+                        withScroll={true}
+                    />
+                  )}
+            </View>
           </SafeAreaView>
+        </View>
+        <ScrollView style={{flex:2.25,contentContainerStyle:'center'}}>
           <View style={{flex:1,justifyContent:'center'}}>
           <View style={styles.row}>
             <View style={styles.chkBoxContainerCol}>
@@ -338,7 +340,7 @@ export class AcceptDoc extends Component {
           {/* </View> */}
           {/* </SafeAreaView> */}
           {/* </ScrollView> */}
-        </View>
+        </ScrollView>
         <View style={styles.bottomFooter} />
       </View>
     );
