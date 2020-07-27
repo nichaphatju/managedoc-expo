@@ -24,10 +24,13 @@ export class SearchStatusDocScreen extends Component {
 
   constructor(props) {
     super(props)
+    this.onChangeSearchFilter = this.onChangeSearchFilter.bind(this);
 
     this.state = {
       isLoading: false,
       loading: true,
+      docs: [],
+      tmpDocs: []
     }
   }
 
@@ -45,16 +48,24 @@ export class SearchStatusDocScreen extends Component {
             fbObject[key]['Id'] = key;
             newArr.push(fbObject[key]);
         });
-      that.setState({loading:false, docs: newArr });
+      that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
   }
 
-  onChangeSearchFilter = (searchString) =>{
-    this.setState({loading:true,searchString:searchString});
-    this.state.docs.filter((doc) => {
-      doc.topic == searchString;
-    })
-    this.setState({loading:false,searchString:searchString,docs: this.state.docs});
+  onChangeSearchFilter = (e) =>{
+    console.log('searchString')
+    console.log(e.nativeEvent.text)
+    var searchText = e.nativeEvent.text;
+    this.setState({loading:true,searchString:searchText});
+    var allData = this.state.tmpDocs;
+    console.log(allData.length)
+    var docs = allData.filter((doc) => 
+      searchText == '' || searchText == null || searchText === undefined 
+      || doc.topic == searchText || doc.topic.toLowerCase().includes(searchText.toLowerCase())
+      || doc.assignTo == searchText || doc.assignTo.toLowerCase().includes(searchText.toLowerCase())
+    )
+    console.log(docs)
+    this.setState({loading:false,searchString:searchText,docs: docs});
   }
 
   statusPage = () => {
@@ -144,9 +155,7 @@ export class SearchStatusDocScreen extends Component {
                 style={styles.inputText}
                 placeholder="ค้นหาเอกสาร"
                 placeholderTextColor="#FFF"
-                onChangeText={(searchString) => {
-                  this.setState({searchString});
-                }}
+                onChange={this.onChangeSearchFilter}
                 underlineColorAndroid="transparent"
               />
             </View>
