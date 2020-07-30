@@ -20,14 +20,10 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// import {createAppContainer} from 'react-navigation';
-// import {createStackNavigator} from 'react-navigation-stack';
 import { createAppContainer,createBottomTabNavigator } from 'react-navigation'
 import {createStackNavigator} from 'react-navigation-stack';
 
 import {styles} from './styles';
-// import database from '@react-native-firebase/database';
-// import storage from '@react-native-firebase/storage';
 
 // import Home from '../Home';
 // import SearchAssignDoc from './SearchAssignDoc/SearchAssignDoc';
@@ -35,15 +31,20 @@ import {styles} from './styles';
 import BottomNavigation, {
   FullTab,
 } from 'react-native-material-bottom-navigation';
-// import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-// import FileInput from 'react-simple-file-input';
-// var FileInput = require('react-simple-file-input');
-// var allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
 import firebase from 'firebase';
 import { FileSystem } from 'expo-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
 // import { FilePond, File, registerPlugin } from 'react-filepond';
 import renderIf from '../renderIf';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export class AssignDoc extends Component {
   tabs = [
@@ -137,6 +138,35 @@ export class AssignDoc extends Component {
       that.setState({loading:false, userList: newArr, assignTo: newArr[0].name });
     });
   }
+
+  // registerForPushNotificationsAsync = async () => {
+  //   if (Constants.isDevice) {
+  //     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+  //     let finalStatus = existingStatus;
+  //     if (existingStatus !== 'granted') {
+  //       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+  //       finalStatus = status;
+  //     }
+  //     if (finalStatus !== 'granted') {
+  //       alert('Failed to get push token for push notification!');
+  //       return;
+  //     }
+  //     const token = await Notifications.getExpoPushTokenAsync();
+  //     console.log(token);
+  //     this.setState({ expoPushToken: token });
+  //   } else {
+  //     alert('Must use physical device for Push Notifications');
+  //   }
+  
+  //   if (Platform.OS === 'android') {
+  //     Notifications.createChannelAndroidAsync('default', {
+  //       name: 'default',
+  //       sound: true,
+  //       priority: 'max',
+  //       vibrate: [0, 250, 250, 250],
+  //     });
+  //   }
+  // };
 
   loadUsers() {
     return this.state.userList.map((user) => (
