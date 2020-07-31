@@ -129,20 +129,30 @@ export class AssignDoc extends Component {
 
   componentWillMount(){
     let that = this;
-    firebase.database().ref('users/').on('value', function(data) {
-      console.log(data)
-      const fbObject = data.val();
-        const newArr = [];
-        Object.keys(fbObject).map( (key,index)=>{
-            console.log(key);
-            console.log("||");
-            console.log(index);
-            console.log(fbObject[key])
-            // fbObject[key]['username'] = key;
-            newArr.push(fbObject[key]);
-        });
-      console.log(newArr)
-      that.setState({loading:false, userList: newArr, assignTo: newArr[0].name });
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    console.log(displayName)
+    var isDirector = false;
+    firebase.database().ref('users/'+ displayName).on('value', function(data) {
+      isDirector = data.val().isDirector == 'true' || data.val().isDirector;
+      console.log(data.val().isDirector)
+      console.log('isDirector '+isDirector)
+      firebase.database().ref('users/').on('value', function(data) {
+        console.log(data)
+        const fbObject = data.val();
+          const newArr = [];
+          Object.keys(fbObject).map( (key,index)=>{
+              console.log(key);
+              console.log("||");
+              console.log(index);
+              console.log(fbObject[key])
+              // fbObject[key]['username'] = key;
+              if(!isDirector || (isDirector && fbObject[key]['acceptFromDirector'] == 'true' || fbObject[key]['acceptFromDirector'])) newArr.push(fbObject[key]);
+          });
+        console.log(newArr)
+        var defaultVal = newArr && newArr.length > 0 ? newArr[0].name : '';
+        that.setState({loading:false, userList: newArr, assignTo: defaultVal });
+      });
     });
   }
 
