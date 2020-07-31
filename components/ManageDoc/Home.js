@@ -31,6 +31,10 @@ import SearchStatusDoc from './StatusDoc/SearchStatusDoc';
 import ManageDoc from './ManageDoc';
 import * as Font from 'expo-font'
 import firebase from 'firebase';
+import Constants from 'expo-constants';
+// import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import {Notifications} from 'expo';
 
 class HomeScreen extends Component {
   _isMounted = false;
@@ -52,6 +56,7 @@ class HomeScreen extends Component {
     if (this._isMounted) {
       this.setState({ loading: false })
     }
+    this.getPushNotificationPermissions();
   }
 
   componentWillUnmount() {
@@ -76,6 +81,34 @@ class HomeScreen extends Component {
     console.log('statusPage');
     this.props.navigation.navigate('SearchStatusDoc');
   };
+
+  getPushNotificationPermissions = async () => {
+    console.log(' ### getPushNotificationPermissions ###')
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    console.log(finalStatus)
+    // Get the token that uniquely identifies this device
+    var token = await Notifications.getExpoPushTokenAsync();
+    console.log("Notification Token: ", token);
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    console.log(displayName)
+    firebase.database().ref('users/' + displayName).update({
+      deviceToken : token
+    });
+  }
 
   render() {
     const {navigate} = this.props.navigation;

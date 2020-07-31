@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useState, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -36,7 +36,11 @@ import { FileSystem } from 'expo-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
 // import { FilePond, File, registerPlugin } from 'react-filepond';
 import renderIf from '../renderIf';
-import * as Notifications from 'expo-notifications';
+
+import Constants from 'expo-constants';
+// import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import {Notifications} from 'expo';
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
@@ -45,7 +49,6 @@ import * as Notifications from 'expo-notifications';
 //     shouldSetBadge: false,
 //   }),
 // });
-
 export class AssignDoc extends Component {
   tabs = [
     {
@@ -116,7 +119,11 @@ export class AssignDoc extends Component {
       uploadValue: 0, //ใช้เพื่อดู Process การ Upload
       filesMetadata:[], //ใช้เพื่อรับข้อมูล Metadata จาก Firebase
       rows:  [], //ใช้วาด DataTable
-      fileName:''
+      fileName:'',
+      // expoPushToken = useState(''),
+      // setExpoPushToken = useState(false),
+      // notificationListener = useRef(),
+      // responseListener = useRef()
     };
   }
 
@@ -167,6 +174,7 @@ export class AssignDoc extends Component {
   //     });
   //   }
   // };
+
 
   loadUsers() {
     return this.state.userList.map((user) => (
@@ -367,7 +375,32 @@ export class AssignDoc extends Component {
     });
   }
 
+  sendPushNotification=async(expoPushToken)=> {
+    console.log(expoPushToken)
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    const message = {
+      to: expoPushToken,
+      sound: 'default',
+      title: 'คุณได้รับเอกสารจาก '+displayName,
+      body: 'กรุณาตรวจสอบเอกสาร',
+      data: { data: 'goes here' },
+    };
+    console.log(message)
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+  
+
   submitForm = () =>{
+    // this.sendPushNotification()
     console.log('submitForm')
     var that = this;
     var userInfo = firebase.auth().currentUser;
@@ -384,6 +417,12 @@ export class AssignDoc extends Component {
     }else if(formValues.topic === undefined || formValues.topic == null || formValues.topic ==''){
       alert('กรุณาระบุเรื่อง');
     }else{
+      firebase.database().ref('users/'+that.state.assignTo).on('value', function(data) {
+        console.log('push noti tooo ',data);
+        console.log(data.val().deviceToken)
+        var targetDeviceToken = data.val().deviceToken;
+        that.sendPushNotification(targetDeviceToken)
+      });
       itemsRef.push(formValues).then((snap) => {
         const key = snap.key 
         console.log('key ==> '+key)
@@ -416,7 +455,7 @@ export class AssignDoc extends Component {
 
   assignPage = () => {
     console.log('assignPage');
-    this.props.navigation.navigate('ManageDoc');
+    this.props.navigation.goBack();
   };
 
   render() {
