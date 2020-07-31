@@ -64,6 +64,12 @@ class HomeScreen extends Component {
   }
 
   _onLogout = () => {
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    console.log(displayName)
+    firebase.database().ref('users/' + displayName).update({
+      deviceToken : ''
+    });
     firebase.auth().signOut();
   };
 
