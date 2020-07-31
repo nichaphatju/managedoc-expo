@@ -99,9 +99,15 @@ export class StatusDoc extends Component {
       firebase.database().ref('assignDoc/' + that.state.docKey).update({
         status: that.state.status
       });
+      this.back();
     }
 
   }
+
+  back = () => {
+    console.log('back');
+    this.props.navigation.goBack();
+  };
 
   render() {
     return (
