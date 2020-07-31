@@ -18,6 +18,8 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { createAppContainer } from 'react-navigation'
+import {createStackNavigator} from 'react-navigation-stack';
 
 import {styles} from './styles';
 import firebase from 'firebase';
@@ -103,9 +105,9 @@ export class AcceptDoc extends Component {
     })
   }
 
-  assignPage = () => {
-    console.log('assignPage');
-    this.props.navigation.navigate('ManageDoc');
+  back = () => {
+    console.log('back');
+    this.props.navigation.goBack();
   };
 
   componentWillMount() {
@@ -164,11 +166,13 @@ export class AcceptDoc extends Component {
         console.log('newDocRecord ',newDocRecord)
         itemsRef.push(newDocRecord).then((snap) => {
           const key = snap.key 
-          that.assignPage();
+          that.back();
         }).catch(err => {
           alert("เกิดข้อผิดพลาด")
           console.log(JSON.stringify(err));
         })
+      }else{
+        that.back();
       }
     }
     
@@ -198,7 +202,7 @@ export class AcceptDoc extends Component {
     //     itemsRef.push(newDocRecord).then((snap) => {
     //       const key = snap.key 
     //       console.log('key ==> '+key)
-    //       this.assignPage();
+    //       this.back();
     //     }).catch(err => {
     //       alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
     //       console.log(JSON.stringify(err));
@@ -350,20 +354,17 @@ export class AcceptDoc extends Component {
 // const AcceptDocNavigator = createStackNavigator(
 //   {
 //     AcceptDoc: {
-//       screen: AcceptDocScreen,
-//       navigationOptions: {
-//         headerShown: false,
-//       },
+//       screen: AcceptDocScreen
 //     },
-//     SearchAcceptDoc: {
-//       screen: SearchAcceptDoc,
-//       navigationOptions: {
-//         headerShown: false,
-//       },
-//     },
+//     // SearchAcceptDoc: {
+//     //   screen: SearchAcceptDoc,
+//     //   navigationOptions: {
+//     //     headerShown: false,
+//     //   },
+//     // },
 //   },
 //   {
-//     initialRouteName: 'SearchAcceptDoc',
+//     initialRouteName: 'AcceptDoc'
 //   },
 // );
 

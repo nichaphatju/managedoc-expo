@@ -59,9 +59,9 @@ export default function ManageDoc() {
         }}
       >
         {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
-        <Tab.Screen name="AssignDoc" component={AssignDocScreen} />
+        {/* <Tab.Screen name="AssignDoc" component={AssignDocScreen} />
         <Tab.Screen name="AcceptDoc" component={AcceptDocScreen} />
-        <Tab.Screen name="StatusDoc" component={StatusDocScreen} />
+        <Tab.Screen name="StatusDoc" component={StatusDocScreen} /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );
