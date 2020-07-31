@@ -68,7 +68,8 @@ export class AcceptDoc extends Component {
       status: "done",     // สถานะ
       sendType:"",    // แจ้ง,มอบ
       sendTo:"",
-      docKey:""
+      docKey:"",
+      comment:""
     };
   }
 
@@ -137,8 +138,12 @@ export class AcceptDoc extends Component {
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var that = this;
-    if(this.state.sendType != '' && this.state.sendTo == ''){
+    if(this.state.annouceType == '' && this.state.sendType == ''){
+      alert('กรุณาเลือกก่อนกดบันทึก');
+    }else if(this.state.sendType != '' && this.state.sendTo == ''){
       alert('กรุณาเลือกผู้รับเอกสารต่อ');
+    }else if(this.state.annouceType != '' && this.state.status == ''){
+      alert('กรุณาเลือกสถานะ');
     }else{
       console.log('recordData ',that.state.recordData)
       console.log('DOC KEY ::: '+that.state.docKey);
@@ -149,7 +154,8 @@ export class AcceptDoc extends Component {
       if(oldrecord.docName != null && oldrecord.docName !== undefined && oldrecord.docName != '') docName = oldrecord.docName;
       firebase.database().ref('assignDoc/' + that.state.docKey).update({
         announceType : that.state.annouceType,
-        status: that.state.status
+        status: that.state.status,
+        comment: that.state.comment
       });
       if(that.state.sendType != '' && that.state.sendTo != ''){
         var itemsRef = firebase.database().ref().child(`assignDoc`);
@@ -213,6 +219,11 @@ export class AcceptDoc extends Component {
     //   console.error(err);
     // })
 
+  }
+
+  onChangeComment = (e) =>{
+    var comment = e.nativeEvent.text;
+    this.setState({comment:comment});
   }
 
   handleAnnouceCheckBoxChanged = (val) => {
@@ -337,6 +348,7 @@ export class AcceptDoc extends Component {
           <View style={styles.row}>
             <TextInput
                 style={styles.inputTextArea}
+                onChange={this.onChangeComment}
                 // underlineColorAndroid="transparent"
               />
           </View>
