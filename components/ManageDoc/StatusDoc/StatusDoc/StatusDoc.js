@@ -20,7 +20,7 @@ export class StatusDoc extends Component {
 
   constructor(props) {
     super(props);
-    this.data = [
+    this.histories = [
       {time: '09:00', title: 'Event 1', description: 'Event 1 Description'},
       {time: '10:45', title: 'Event 2', description: 'Event 2 Description'},
       {time: '12:00', title: 'Event 3', description: 'Event 3 Description'},
@@ -75,12 +75,20 @@ export class StatusDoc extends Component {
   async componentDidMount() {
     
     var that = this;
+    const newHistories = [];
     console.log('componentDidMount')
     console.log(this.props.navigation.state.params.docId);
     that.setState({docKey: this.props.navigation.state.params.docId});
     var assignDocRef = firebase.database().ref('assignDoc');
     assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
       const arrReslt = Object.values(data.val());
+      var timeline = {};
+      var dt = that.convertDateTime(data.val()['updatedDate']);
+      timeline.time = dt;
+      timeline.title = data.val()['selectedType'];
+      timeline.description = 'ส่งถึง '+data.val()['assignTo'];
+      newHistories.push(timeline);
+
       console.log('arrReslt');
       console.log(arrReslt);
       console.log('VAL');
@@ -94,18 +102,39 @@ export class StatusDoc extends Component {
         const arrReslt = Object.values(data.val());
         const fbObject = data.val();
           Object.keys(fbObject).map( (key,index)=>{
+              var timeline = {};
               fbObject[key]['Id'] = key;
               var thisDocName = fbObject[key]['docName'];
-              if(thisDocName == that.state.docKey) newArr.push(fbObject[key]);
+              console.log('thisDocName :: ',thisDocName)
+              console.log('that.props.navigation.state.params.docId :: ',that.props.navigation.state.params.docId)
+              if(thisDocName == that.props.navigation.state.params.docId){
+                var dt = that.convertDateTime(fbObject[key]['updatedDate']);
+                timeline.time = dt;
+                timeline.title = fbObject[key]['selectedType'];
+                timeline.description = 'ส่งถึง '+fbObject[key]['assignTo'];
+                newArr.push(fbObject[key]);
+                newHistories.push(timeline);
+              }
           });
       }
-      that.setState({ histories:newArr });
+      // that.setState({ histories:newArr });
+      console.log('newHistories >> ',newHistories)
+      that.histories = newHistories;
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
     ref.getDownloadURL().then(url => {
       console.log('url >> '+url)
       that.setState({pdfFileUrl:url})
     })
+  }
+
+  convertDateTime(dtStr){
+    var dt = new Date(dtStr),
+    mnth = ("0" + (dt.getMonth() + 1)).slice(-2),
+    day = ("0" + dt.getDate()).slice(-2),
+    hr = ("0" + dt.getHours()).slice(-2),
+    min = ("0" + dt.getMinutes()).slice(-2);
+    return [day,mnth,dt.getFullYear()].join("/") + ' ' + hr +':'+min;
   }
 
   updateData = () =>{
@@ -176,7 +205,7 @@ export class StatusDoc extends Component {
             </View>
         </View>
         <Timeline
-          data={this.data}
+          data={this.histories}
         />
         </ScrollView>
         <View style={styles.bottomFooter} />
