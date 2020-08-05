@@ -164,11 +164,6 @@ export default class Login extends Component {
          <KeyboardAwareView style={{flex:1,padding: 10,}} enableOnAndroid extraHeight={Platform.OS === "android" ? 10 : undefined}> */}
           <View style={styles.container}>
             <View style={styles.header}>
-              <Text style={styles.logo}>ยินดีต้อนรับสู่ ระบบการบริหารงาน</Text>
-              <Text style={styles.logo}>โรงเรียนปากท่อพิทยาคม</Text>
-            </View>
-            {/* <Animated.View style={{height: this.state.keyboardHeight}}/> */}
-            <View style={styles.subHeader}>
               <Animated.Image source={{
                   uri: 'https://firebasestorage.googleapis.com/v0/b/managedocument-cc7fd.appspot.com/o/applogo.png?alt=media&token=9e7e3d0f-c8d8-4f16-96c2-f21692a3b1cd',
                 }}
@@ -180,6 +175,11 @@ export default class Login extends Component {
                 }}
               /> */}
             </View>
+            <View style={styles.subHeader}>
+              <Text style={styles.logo}>ยินดีต้อนรับสู่ ระบบการบริหารงาน</Text>
+              <Text style={styles.logo}>โรงเรียนปากท่อพิทยาคม</Text>
+            </View>
+            {/* <Animated.View style={{height: this.state.keyboardHeight}}/> */}
             <View style={styles.body}>
               <View style={styles.inputView}>
                 <TextInput

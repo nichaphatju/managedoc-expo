@@ -15,10 +15,10 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-export const IMG_W_SIZE = 110;
-export const IMG_W_SM_SIZE = 55;
-export const IMG_SIZE = 160;
-export const IMG_SM_SIZE = 75;
+export const IMG_W_SIZE = 100;
+export const IMG_W_SM_SIZE = 45;
+export const IMG_SIZE = 150;
+export const IMG_SM_SIZE = 65;
 
 const styles = StyleSheet.create({
   container: {
@@ -86,20 +86,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   header: {
-    paddingTop: 9,
-    flex: 1,
+    paddingTop: 30,
+    flex: 0.9,
     alignItems: 'center',
     justifyContent: 'center',
-    // marginBottom: 0.7,
+    marginBottom: 0.7,
   },
   subHeader: {
-    flex: 1.4,
+    // paddingTop: 15,
+    flex: 1.3,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4.5,
   },
   body: {
-    flex: 3.5,
+    flex: 3.7 ,
     alignItems: 'center',
     justifyContent: 'center',
   },
