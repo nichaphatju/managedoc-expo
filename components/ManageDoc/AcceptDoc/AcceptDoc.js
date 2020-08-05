@@ -264,7 +264,7 @@ export class AcceptDoc extends Component {
             </View>
           </SafeAreaView>
         </View>
-        <ScrollView style={{flex:2.25,contentContainerStyle:'center'}}>
+        <ScrollView style={{flex:2.65,contentContainerStyle:'center'}}>
           <View style={{flex:1,justifyContent:'center'}}>
           <View style={styles.row}>
             <View style={styles.chkBoxContainerCol}>
