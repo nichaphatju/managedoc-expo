@@ -15,6 +15,11 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+export const IMG_W_SIZE = 110;
+export const IMG_W_SM_SIZE = 55;
+export const IMG_SIZE = 160;
+export const IMG_SM_SIZE = 75;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -29,8 +34,12 @@ const styles = StyleSheet.create({
     color: '#ff6600',
   },
   imgLogo: {
-    width: 110,
-    height: 140,
+    // width: 110,
+    // height: 140,
+  },
+  imgLogoSM: {
+    // width: 55,
+    // height: 70,
   },
   inputView: {
     width: '80%',
@@ -77,21 +86,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   header: {
-    paddingTop: 10,
-    flex: 2,
+    paddingTop: 9,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,
+    // marginBottom: 0.7,
+  },
+  subHeader: {
+    flex: 1.4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4.5,
   },
   body: {
-    flex: 10,
+    flex: 3.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   bottomFooter: {
-    flex: 0.2,
+    flex: 0.1,
     backgroundColor: '#ff6600',
   },
+  keyboardAvoidContainer: {
+    flex: 1,
+    // backgroundColor: 'orange'
+  }
 });
 
 export {styles};

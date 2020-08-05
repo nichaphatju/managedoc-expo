@@ -14,7 +14,9 @@ if (!firebase.apps.length) {
 }
 const AppNavigator = createStackNavigator(
   {
-    Login: {screen: Login},
+    Login: {screen: Login,navigationOptions: {
+      headerShown: false,
+    }},
     Home: {screen: Home}
   },
   {
