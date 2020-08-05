@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   greenDot: {
     height: 10,
     width: 10,
-    backgroundColor: 'green',
+    backgroundColor: '#51DD17',
     borderRadius: 50,
     display: 'flex',
   },
