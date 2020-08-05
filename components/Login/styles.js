@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#ff6600',
   },
+  imgLogo: {
+    width: 110,
+    height: 140,
+  },
   inputView: {
     width: '80%',
     backgroundColor: '#FFFFFF',

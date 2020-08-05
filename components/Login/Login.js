@@ -9,7 +9,8 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 
 import {
@@ -91,6 +92,14 @@ export default class Login extends Component {
           <View style={styles.header}>
             <Text style={styles.logo}>ยินดีต้อนรับสู่ ระบบการบริหารงาน</Text>
             <Text style={styles.logo}>โรงเรียนปากท่อพิทยาคม</Text>
+          </View>
+          <View style={styles.header}>
+            <Image
+              style={styles.imgLogo}
+              source={{
+                uri: 'https://firebasestorage.googleapis.com/v0/b/managedocument-cc7fd.appspot.com/o/applogo.png?alt=media&token=9e7e3d0f-c8d8-4f16-96c2-f21692a3b1cd',
+              }}
+            />
           </View>
           <View style={styles.body}>
             <View style={styles.inputView}>
