@@ -20,13 +20,7 @@ export class StatusDoc extends Component {
 
   constructor(props) {
     super(props);
-    this.histories = [
-      {time: '09:00', title: 'Event 1', description: 'Event 1 Description'},
-      {time: '10:45', title: 'Event 2', description: 'Event 2 Description'},
-      {time: '12:00', title: 'Event 3', description: 'Event 3 Description'},
-      {time: '14:00', title: 'Event 4', description: 'Event 4 Description'},
-      {time: '16:30', title: 'Event 5', description: 'Event 5 Description'}
-    ]
+    this.histories = []
     this.state = {
       userList: [
         {name: 'admin', position: 'Admin User',key: 'admin'},
@@ -34,6 +28,7 @@ export class StatusDoc extends Component {
         {name: 'dev', position: 'Developer User',key: 'dev'},
       ],
       statusOptions: [
+        {name: '-- กรุณาเลือก --', key: ''},
         {name: 'ดำเนินการเสร็จสิ้น', key: 'done'},
         {name: 'กำลังดำเนินการ', key: 'on process'}
       ],
@@ -62,7 +57,9 @@ export class StatusDoc extends Component {
       docKey:"",
       status : 'done',
       histories : [],
-      history : []
+      history : [],
+      currentUserName: '',
+      editable : true
     };
   }
 
@@ -73,46 +70,57 @@ export class StatusDoc extends Component {
   }
 
   async componentDidMount() {
-    
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var that = this;
+    that.setState({currentUserName : displayName});
     const newHistories = [];
-    console.log('componentDidMount')
-    console.log(this.props.navigation.state.params.docId);
+    // console.log(this.props.navigation.state.params.docId);
     that.setState({docKey: this.props.navigation.state.params.docId});
     var assignDocRef = firebase.database().ref('assignDoc');
     assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
-      const arrReslt = Object.values(data.val());
       var timeline = {};
-      var dt = that.convertDateTime(data.val()['updatedDate']);
+      var valObj = data.val();
+      var dt = that.convertDateTime(valObj['updatedDate']);
       timeline.time = dt;
-      timeline.title = data.val()['selectedType'];
-      timeline.description = 'ส่งถึง '+data.val()['assignTo'];
+      timeline.title = valObj['selectedType'];
+      timeline.description = 'ส่งถึง '+valObj['assignTo'];
+      timeline.lineColor = '#D3D3D3';
+      timeline.circleColor = that.getDotTimelineColor(valObj['status']);
       newHistories.push(timeline);
 
-      console.log('arrReslt');
-      console.log(arrReslt);
-      console.log('VAL');
-      console.log(data.val().topic)
-      that.setState({recordData:data.val()})
+      // console.log('arrReslt');
+      // console.log(arrReslt);
+      // console.log('VAL');
+      // console.log(valObj.topic)
+      // console.log('[status] >> '+valObj['status'])
+      var currentStatus = valObj['status'];
+      if(currentStatus == 'assign') currentStatus = '';
+      var editable = displayName == valObj['assignTo'];
+      console.log(' that.state.currentUserName '+displayName);
+      console.log(' assign to '+valObj['assignTo']);
+      that.setState({recordData : valObj, status:currentStatus, editable : editable})
     });
     assignDocRef.on('value', function(data) {
-      console.log(data)
+      // console.log(data)
       const newArr = [];
       if(data.val() != null && data.val() !== undefined){
-        const arrReslt = Object.values(data.val());
         const fbObject = data.val();
           Object.keys(fbObject).map( (key,index)=>{
               var timeline = {};
               fbObject[key]['Id'] = key;
-              var thisDocName = fbObject[key]['docName'];
-              console.log('thisDocName :: ',thisDocName)
-              console.log('that.props.navigation.state.params.docId :: ',that.props.navigation.state.params.docId)
+              var obj = fbObject[key];
+              var thisDocName = obj['docName'];
+              // console.log('thisDocName :: ',thisDocName)
+              // console.log('that.props.navigation.state.params.docId :: ',that.props.navigation.state.params.docId)
               if(thisDocName == that.props.navigation.state.params.docId){
-                var dt = that.convertDateTime(fbObject[key]['updatedDate']);
+                var dt = that.convertDateTime(obj['updatedDate']);
                 timeline.time = dt;
-                timeline.title = fbObject[key]['selectedType'];
-                timeline.description = 'ส่งถึง '+fbObject[key]['assignTo'];
-                newArr.push(fbObject[key]);
+                timeline.title = obj['selectedType'];
+                timeline.description = 'ส่งถึง '+obj['assignTo'];
+                timeline.lineColor = '#D3D3D3';
+                timeline.circleColor = that.getDotTimelineColor(obj['status']);
+                newArr.push(obj);
                 newHistories.push(timeline);
               }
           });
@@ -128,6 +136,10 @@ export class StatusDoc extends Component {
     })
   }
 
+  getDotTimelineColor(status){
+    return status == null || status == '' || status === undefined || status == 'assign' ? 'red' : status == 'done' ? '#51DD17' : 'yellow';
+  }
+
   convertDateTime(dtStr){
     var dt = new Date(dtStr),
     mnth = ("0" + (dt.getMonth() + 1)).slice(-2),
@@ -139,11 +151,11 @@ export class StatusDoc extends Component {
 
   updateData = () =>{
     var that = this;
-    var userInfo = firebase.auth().currentUser;
-    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
-    var that = this;
+    console.log(this.state.currentUserName)
     if(this.state.sendType != '' && this.state.sendTo == ''){
       alert('กรุณาเลือกผู้รับเอกสารต่อ');
+    }else if(this.state.currentUserName != that.state.recordData.assignTo){
+      alert('ไม่สามารถบันทึกได้ เนื่องจากเอกสารนี้ถูกส่งถึง '+that.state.recordData.assignTo)
     }else{
       console.log('recordData ',that.state.recordData)
       console.log('DOC KEY ::: '+that.state.docKey);
@@ -194,6 +206,7 @@ export class StatusDoc extends Component {
             <View style={styles.row}>
               <Text style={styles.labelText}>สถานะ :</Text>
               <Picker
+                enabled={this.state.editable}
                 style={styles.inputText}
                 selectedValue={this.state.status}
                 onValueChange={(itemValue, itemIndex) =>
