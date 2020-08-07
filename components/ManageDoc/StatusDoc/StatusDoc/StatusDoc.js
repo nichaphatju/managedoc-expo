@@ -126,12 +126,12 @@ export class StatusDoc extends Component {
           });
       }
       // that.setState({ histories:newArr });
-      console.log('newHistories >> ',newHistories)
+      // console.log('newHistories >> ',newHistories)
       that.histories = newHistories;
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
     ref.getDownloadURL().then(url => {
-      console.log('url >> '+url)
+      // console.log('url >> '+url)
       that.setState({pdfFileUrl:url})
     })
   }
