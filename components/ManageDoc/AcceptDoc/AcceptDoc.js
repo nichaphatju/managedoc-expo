@@ -8,7 +8,8 @@ import {
   Picker,
   Dimensions,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
+  Image
 } from 'react-native';
 
 import {
@@ -63,6 +64,7 @@ export class AcceptDoc extends Component {
       cancelButtonClicked: false,
       file: {},
       pdfFileUrl:"",
+      fileType:'',
       recordData:{},
       annouceType: "",  // ทราบ,เห็นชอบ
       status: "done",     // สถานะ
@@ -100,9 +102,12 @@ export class AcceptDoc extends Component {
       that.setState({recordData:data.val()})
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
-    ref.getDownloadURL().then(url => {
-      console.log('url >> '+url)
-      that.setState({pdfFileUrl:url})
+    ref.getMetadata().then(meta => {
+      console.log(meta.contentType)
+      ref.getDownloadURL().then(url => {
+        console.log('url >> '+url)
+        that.setState({pdfFileUrl:url,fileType:meta.contentType})
+      })
     })
   }
 
@@ -252,9 +257,18 @@ export class AcceptDoc extends Component {
         <View style={styles.contentLayout}>
           <SafeAreaView style={styles.containerSA}>
             <View style={{flex:1,justifyContent:'center'}}>
-                  {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '', 
+                  {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '' && this.state.fileType == 'application/pdf', 
                       <PDFReader
                         style={styles.pdf}
+                        source={{
+                          uri: this.state.pdfFileUrl,
+                        }}
+                        withScroll={true}
+                    />
+                  )}
+                  {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '' && (this.state.fileType == 'image/jpeg' || this.state.fileType == 'image/png'),                  
+                      <Image
+                        style={styles.photo}
                         source={{
                           uri: this.state.pdfFileUrl,
                         }}

@@ -146,6 +146,10 @@ const styles = StyleSheet.create({
     height: 500,
     backgroundColor:'#000'
   },
+  photo: {
+    width: 300,
+    height: 500,
+  },
   containerSA : {
     flex: 1,
     // marginTop: Constants.statusBarHeight,
