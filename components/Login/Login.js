@@ -122,25 +122,29 @@ export default class Login extends Component {
   _onLogin = () => {
     // let id = this.props.id;
     if (this.state != null) {
-      firebase.auth()
-        .signInWithEmailAndPassword(this.state.username, this.state.password)
-        .then(() => {
-          console.log('User account created & signed in!');
-          this.props.navigation.navigate('Home');
-        })
-        .catch((error) => {
-          console.log('login username ' + this.state.username + 'error');
-          if (error.code === 'auth/email-already-in-use') {
-            console.log('That email address is already in use!');
-          } else if (error.code === 'auth/invalid-email') {
-            console.log('That email address is invalid!');
-            this.renderAlertMsg('', 'invalid email address');
-          } else {
-            this.renderAlertMsg('', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
-          }
+      if(this.state.username !== undefined && this.state.password !== undefined){
+        firebase.auth()
+          .signInWithEmailAndPassword(this.state.username, this.state.password)
+          .then(() => {
+            console.log('User account created & signed in!');
+            this.props.navigation.navigate('Home');
+          })
+          .catch((error) => {
+            console.log('login username ' + this.state.username + 'error');
+            if (error.code === 'auth/email-already-in-use') {
+              console.log('That email address is already in use!');
+            } else if (error.code === 'auth/invalid-email') {
+              console.log('That email address is invalid!');
+              this.renderAlertMsg('', 'invalid email address');
+            } else {
+              this.renderAlertMsg('', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+            }
 
-          // console.error(error);
-        });
+            // console.error(error);
+          });
+      }else{
+        alert("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
+      }
     } else {
     }
   };
