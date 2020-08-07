@@ -41,6 +41,7 @@ export class AcceptDoc extends Component {
         {name: 'dev', position: 'Developer User',key: 'dev'},
       ],
       statusOptions: [
+        {name: 'กรุณาเลือก', key: ''},
         {name: 'ดำเนินการเสร็จสิ้น', key: 'done'},
         {name: 'กำลังดำเนินการ', key: 'on process'}
       ],
@@ -67,7 +68,7 @@ export class AcceptDoc extends Component {
       fileType:'',
       recordData:{},
       annouceType: "",  // ทราบ,เห็นชอบ
-      status: "done",     // สถานะ
+      status: "",     // สถานะ
       sendType:"",    // แจ้ง,มอบ
       sendTo:"",
       docKey:"",

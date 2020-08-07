@@ -28,7 +28,7 @@ export class StatusDoc extends Component {
         {name: 'dev', position: 'Developer User',key: 'dev'},
       ],
       statusOptions: [
-        {name: '-- กรุณาเลือก --', key: ''},
+        {name: 'กรุณาเลือก', key: ''},
         {name: 'ดำเนินการเสร็จสิ้น', key: 'done'},
         {name: 'กำลังดำเนินการ', key: 'on process'}
       ],
