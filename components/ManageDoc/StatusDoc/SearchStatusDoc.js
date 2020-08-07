@@ -30,12 +30,17 @@ export class SearchStatusDocScreen extends Component {
       isLoading: false,
       loading: true,
       docs: [],
-      tmpDocs: []
+      tmpDocs: [],
+      currentUserName: ''
     }
   }
 
   componentWillMount(){
     let that = this;
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    this.setState({currentUserName : displayName});
+    console.log(this.state.currentUserName)
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
       const newArr = [];
@@ -44,16 +49,14 @@ export class SearchStatusDocScreen extends Component {
         const fbObject = data.val();
           Object.keys(fbObject).map( (key,index)=>{
               // console.log(key);
-              // console.log("||");
+              // console.log("||");9
               // console.log(index);
               // console.log(user)
               fbObject[key]['Id'] = key;
-              var userInfo = firebase.auth().currentUser;
-              var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
               var dt = that.convertDateTime(fbObject[key].updatedDate);
               fbObject[key].updatedDate = dt;
               console.log('>>'+dt)
-              newArr.push(fbObject[key]);
+              if(displayName == fbObject[key].assignTo || displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
           });
       }
       that.setState({loading:false, docs: newArr, tmpDocs:newArr });
@@ -134,10 +137,11 @@ export class SearchStatusDocScreen extends Component {
               <Text style={liststyles.itemText}>{doc.assignTo}</Text>
               <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
-            <Icon
+            {/* <Icon
               name="remove-red-eye"
               style={liststyles.itemIcon} 
-            />
+            /> */}
+            <Text >{doc.assignTo == this.state.currentUserName == doc.assignBy ? 'ดูสถานะ ' : 'ปรับปรุงสถานะ '}</Text> 
             <Text style={doc.status == null || doc.status == '' || doc.status === undefined || doc.status == 'assign' ? liststyles.redDot : doc.status == 'done' ? liststyles.greenDot : liststyles.yellowDot}/>
           </TouchableOpacity>
           <TouchableOpacity
