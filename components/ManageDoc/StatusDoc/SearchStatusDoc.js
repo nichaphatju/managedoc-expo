@@ -141,7 +141,7 @@ export class SearchStatusDocScreen extends Component {
               name="remove-red-eye"
               style={liststyles.itemIcon} 
             /> */}
-            <Text >{doc.assignTo == this.state.currentUserName == doc.assignBy ? 'ดูสถานะ ' : 'ปรับปรุงสถานะ '}</Text> 
+            <Text >{this.state.currentUserName == doc.assignTo ? 'ปรับปรุงสถานะ ' : 'ดูสถานะ '}</Text> 
             <Text style={doc.status == null || doc.status == '' || doc.status === undefined || doc.status == 'assign' ? liststyles.redDot : doc.status == 'done' ? liststyles.greenDot : liststyles.yellowDot}/>
           </TouchableOpacity>
           <TouchableOpacity
