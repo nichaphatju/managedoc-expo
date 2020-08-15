@@ -395,6 +395,7 @@ export class AssignDoc extends Component {
       title: 'คุณได้รับเอกสารจาก '+displayName,
       body: 'กรุณาตรวจสอบเอกสาร',
       data: { data: 'goes here' },
+      badge: 1
     };
     console.log(message)
     await fetch('https://exp.host/--/api/v2/push/send', {

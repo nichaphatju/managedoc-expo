@@ -142,7 +142,7 @@ class HomeScreen extends Component {
               name="email"
               style={styles.headerText}
               color="white"
-              onPress={() => console.log('hello')}
+              onPress={() => this.acceptPage()}
             />
           </View>
           <View style={styles.headerLine} />

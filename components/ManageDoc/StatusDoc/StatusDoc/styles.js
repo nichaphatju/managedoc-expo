@@ -153,6 +153,10 @@ import {
       height: 500,
       backgroundColor:'#000'
     },
+    photo: {
+      width: Dimensions.get('window').width,
+      height: 500,
+    },
   });
   
   export {styles};  

@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   Picker,
-  ScrollView
+  ScrollView,
+  Image
 } from 'react-native';
 
 import {styles} from './styles';
@@ -59,7 +60,8 @@ export class StatusDoc extends Component {
       histories : [],
       history : [],
       currentUserName: '',
-      editable : true
+      editable : true,
+      fileType:'',
     };
   }
 
@@ -130,10 +132,13 @@ export class StatusDoc extends Component {
       that.histories = newHistories;
     });
     const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
-    ref.getDownloadURL().then(url => {
-      // console.log('url >> '+url)
-      that.setState({pdfFileUrl:url})
-    })
+    ref.getMetadata().then(meta => {
+      console.log(meta.contentType)
+      ref.getDownloadURL().then(url => {
+        console.log('url >> '+url)
+        that.setState({pdfFileUrl:url,fileType:meta.contentType})
+      })
+    });
   }
 
   getDotTimelineColor(status){
@@ -188,8 +193,7 @@ export class StatusDoc extends Component {
           </View>
         </View>
         <View style={{flex:3,justifyContent:'center'}}>
-                {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '', 
-                    <PDFReader
+                {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '' && this.state.fileType == 'application/pdf',                     <PDFReader
                       style={styles.pdf}
                       source={{
                         uri: this.state.pdfFileUrl,
@@ -197,6 +201,15 @@ export class StatusDoc extends Component {
                       withScroll={true}
                   />
                 )}
+                  {renderIf(this.state.pdfFileUrl != null && this.state.pdfFileUrl != undefined && this.state.pdfFileUrl != '' && (this.state.fileType == 'image/jpeg' || this.state.fileType == 'image/png'),                  
+                      <Image
+                        style={styles.photo}
+                        source={{
+                          uri: this.state.pdfFileUrl,
+                        }}
+                        withScroll={true}
+                    />
+                  )}                
         </View>      
         <ScrollView  style={{flex:1}}>  
         <View style={styles.contentLayout}>
