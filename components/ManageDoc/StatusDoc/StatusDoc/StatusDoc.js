@@ -79,10 +79,12 @@ export class StatusDoc extends Component {
     const newHistories = [];
     // console.log(this.props.navigation.state.params.docId);
     that.setState({docKey: this.props.navigation.state.params.docId});
+    var docNameThisRecord = that.props.navigation.state.params.docId;
     var assignDocRef = firebase.database().ref('assignDoc');
     assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
       var timeline = {};
       var valObj = data.val();
+      if(valObj['docName'] !== undefined) docNameThisRecord = valObj['docName'];
       var dt = that.convertDateTime(valObj['updatedDate']);
       timeline.time = dt;
       timeline.title = valObj['selectedType'];
@@ -96,6 +98,15 @@ export class StatusDoc extends Component {
       // console.log('VAL');
       // console.log(valObj.topic)
       // console.log('[status] >> '+valObj['status'])
+      const ref = firebase.storage().ref('files/'+docNameThisRecord);
+      // console.log('ref ,, ',ref)
+      ref.getMetadata().then(meta => {
+        console.log(meta)
+        ref.getDownloadURL().then(url => {
+          console.log('url >> '+url)
+          that.setState({pdfFileUrl:url,fileType:meta.contentType})
+        })
+      });
       var currentStatus = valObj['status'];
       if(currentStatus == 'assign') currentStatus = '';
       var editable = displayName == valObj['assignTo'];
@@ -104,7 +115,7 @@ export class StatusDoc extends Component {
       that.setState({recordData : valObj, status:currentStatus, editable : editable})
     });
     assignDocRef.on('value', function(data) {
-      // console.log(data)
+      console.log(data.val())
       const newArr = [];
       if(data.val() != null && data.val() !== undefined){
         const fbObject = data.val();
@@ -113,8 +124,8 @@ export class StatusDoc extends Component {
               fbObject[key]['Id'] = key;
               var obj = fbObject[key];
               var thisDocName = obj['docName'];
-              // console.log('thisDocName :: ',thisDocName)
-              // console.log('that.props.navigation.state.params.docId :: ',that.props.navigation.state.params.docId)
+              console.log('thisDocName :: ',thisDocName)
+              console.log('that.props.navigation.state.params.docId :: ',that.props.navigation.state.params.docId)
               if(thisDocName == that.props.navigation.state.params.docId){
                 var dt = that.convertDateTime(obj['updatedDate']);
                 timeline.time = dt;
@@ -130,14 +141,6 @@ export class StatusDoc extends Component {
       // that.setState({ histories:newArr });
       // console.log('newHistories >> ',newHistories)
       that.histories = newHistories;
-    });
-    const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
-    ref.getMetadata().then(meta => {
-      console.log(meta.contentType)
-      ref.getDownloadURL().then(url => {
-        console.log('url >> '+url)
-        that.setState({pdfFileUrl:url,fileType:meta.contentType})
-      })
     });
   }
 
