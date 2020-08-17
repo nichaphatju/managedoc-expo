@@ -93,6 +93,7 @@ export class AcceptDoc extends Component {
     console.log('componentDidMount')
     console.log(this.props.navigation.state.params.docId);
     that.setState({docKey: this.props.navigation.state.params.docId});
+    var thisDocName = this.props.navigation.state.params.docId;
     var assignDocRef = firebase.database().ref('assignDoc');
     assignDocRef.child(this.props.navigation.state.params.docId).on('value', function(data) {
       const arrReslt = Object.values(data.val());
@@ -100,16 +101,18 @@ export class AcceptDoc extends Component {
       console.log(arrReslt);
       console.log('VAL');
       console.log(data.val().topic)
+      if(data.val().docName !== undefined) thisDocName = data.val().docName;
+      const ref = firebase.storage().ref('files/'+thisDocName);
+      ref.getMetadata().then(meta => {
+        console.log(meta.contentType)
+        ref.getDownloadURL().then(url => {
+          console.log('url >> '+url)
+          that.setState({pdfFileUrl:url,fileType:meta.contentType})
+        })
+      })
       that.setState({recordData:data.val()})
     });
-    const ref = firebase.storage().ref('files/'+this.props.navigation.state.params.docId);
-    ref.getMetadata().then(meta => {
-      console.log(meta.contentType)
-      ref.getDownloadURL().then(url => {
-        console.log('url >> '+url)
-        that.setState({pdfFileUrl:url,fileType:meta.contentType})
-      })
-    })
+
   }
 
   back = () => {
