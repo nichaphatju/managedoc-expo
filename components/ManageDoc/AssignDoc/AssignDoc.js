@@ -394,7 +394,7 @@ export class AssignDoc extends Component {
       sound: 'default',
       title: 'คุณได้รับเอกสารจาก '+displayName,
       body: 'กรุณาตรวจสอบเอกสาร',
-      data: { data: 'goes here' },
+      data: { data: 'โปรดตรวจสอบเอกสารในเมนูรับเอกสาร' },
       badge: 1
     };
     console.log(message)
@@ -406,7 +406,11 @@ export class AssignDoc extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(message),
-    });
+    }).then(res => {
+      console.log(JSON.stringify(res));
+    }).catch(err => {
+      console.error(err)
+    })
   }
   
 
@@ -414,6 +418,12 @@ export class AssignDoc extends Component {
     // this.sendPushNotification()
     console.log('submitForm')
     var that = this;
+    // firebase.database().ref('users/'+this.state.assignTo).on('value', function(data) {
+    //   console.log('push noti tooo ',data);
+    //   console.log(data.val().deviceToken)
+    //   var targetDeviceToken = data.val().deviceToken;
+    //   that.sendPushNotification(targetDeviceToken);
+    // })
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     var itemsRef = firebase.database().ref().child(`assignDoc`);
@@ -428,11 +438,18 @@ export class AssignDoc extends Component {
     }else if(formValues.topic === undefined || formValues.topic == null || formValues.topic ==''){
       alert('กรุณาระบุเรื่อง');
     }else{
-      firebase.database().ref('users/'+that.state.assignTo).on('value', function(data) {
+      console.log('pass validate')
+      firebase.database().ref('users/'+formValues.assignTo).on('value', function(data) {
         console.log('push noti tooo ',data);
         console.log(data.val().deviceToken)
         var targetDeviceToken = data.val().deviceToken;
         that.sendPushNotification(targetDeviceToken)
+        var notiRef = firebase.database().ref().child(`notifications`);
+        notiRef.push({
+          from : displayName,
+          to : that.state.assignTo,
+          status : 'unread'
+        })
       });
       itemsRef.push(formValues).then((snap) => {
         const key = snap.key 
