@@ -53,11 +53,13 @@ export class SearchStatusDocScreen extends Component {
               // console.log(index);
               // console.log(user)
               fbObject[key]['Id'] = key;
+              fbObject[key].dateSort = new Date(fbObject[key].updatedDate);
               var dt = that.convertDateTime(fbObject[key].updatedDate);
               fbObject[key].updatedDate = dt;
               console.log('>>'+dt)
               if(displayName == fbObject[key].assignTo || displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
           });
+          newArr.sort(function(a, b){return b['dateSort']-a['dateSort']});
       }
       that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });

@@ -27,6 +27,7 @@ import {withNavigation} from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AssignDoc from '../AssignDoc';
 import AcceptDoc from '../../AcceptDoc/AcceptDoc';
+import StatusDoc from '../../StatusDoc/StatusDoc/StatusDoc';
 
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -81,7 +82,7 @@ export class SearchAssignDocScreen extends Component {
     // });
     firebase.database().ref('assignDoc/').on('value', function(data) {
       console.log(data)
-      const newArr = [];
+      var newArr = [];
       if(data.val() != null && data.val() !== undefined){
         const arrReslt = Object.values(data.val());
         const fbObject = data.val();
@@ -93,11 +94,13 @@ export class SearchAssignDocScreen extends Component {
               fbObject[key]['Id'] = key;
               var userInfo = firebase.auth().currentUser;
               var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+              fbObject[key].dateSort = new Date(fbObject[key].updatedDate);
               var dt = that.convertDateTime(fbObject[key].updatedDate);
               fbObject[key].updatedDate = dt;
               console.log('>>'+dt)
               if(displayName == fbObject[key].assignBy) newArr.push(fbObject[key]);
           });
+          newArr.sort(function(a, b){return b['dateSort']-a['dateSort']});
       }
       that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
@@ -116,6 +119,13 @@ export class SearchAssignDocScreen extends Component {
   assignPage = () => {
     console.log('AssignDoc');
     this.props.navigation.navigate('AssignDoc');
+  };
+
+  statusPage = (docId) => {
+    console.log('statusPage');
+    this.props.navigation.navigate('StatusDoc',{
+      docId: docId,
+    });
   };
 
   onChangeSearchFilter = (e) =>{
@@ -240,15 +250,19 @@ export class SearchAssignDocScreen extends Component {
     return (
       <View style={liststyles.contentLayout}>
         <TouchableOpacity
-          style={liststyles.itemContentView}>
+          style={liststyles.itemContentView}
+          onPress={() => this.statusPage(doc.Id)}>
           <TouchableOpacity
-            style={liststyles.subItemTop}>
+            style={liststyles.subItemTop}
+            onPress={() => this.statusPage(doc.Id)}>
             <Icon
               name="account-circle"
               style={liststyles.itemIcon}
+              onPress={() => this.statusPage(doc.Id)}
             />
             <TouchableOpacity
-              style={liststyles.rowStyle}>
+              style={liststyles.rowStyle}
+              onPress={() => this.statusPage(doc.Id)}>
               <Text style={liststyles.itemText}>{doc.assignTo}</Text>
               <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
@@ -281,6 +295,10 @@ const SearchAssignNavigator = createStackNavigator(
       },
     },
     AcceptDoc: {screen: AcceptDoc},
+    StatusDoc: {screen: StatusDoc,
+      navigationOptions: {
+        headerShown: false,
+      },},
   },
   {
     initialRouteName: 'SearchAssignDoc',

@@ -68,10 +68,12 @@ export class SearchAcceptDocScreen extends Component {
             fbObject[key]['Id'] = key;
             var userInfo = firebase.auth().currentUser;
             var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+            fbObject[key].dateSort = new Date(fbObject[key].updatedDate);
             var dt = that.convertDateTime(fbObject[key].updatedDate);
             fbObject[key].updatedDate = dt;
             if(displayName == fbObject[key].assignTo) newArr.push(fbObject[key]);
         });
+        newArr.sort(function(a, b){return b['dateSort']-a['dateSort']});
       that.setState({loading:false, docs: newArr, tmpDocs:newArr });
     });
   }

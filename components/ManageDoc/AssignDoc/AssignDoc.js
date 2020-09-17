@@ -22,6 +22,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createAppContainer,createBottomTabNavigator } from 'react-navigation'
 import {createStackNavigator} from 'react-navigation-stack';
+import { KeyboardAwareView } from 'react-native-keyboard-aware-view';
 
 import {styles} from './styles';
 
@@ -491,6 +492,7 @@ export class AssignDoc extends Component {
     const {checkboxes} = this.state;
 
     return (
+      // <KeyboardAwareView style={styles.keyboardAvoidContainer} behavior="height">
       <View style={styles.container}>
         <View style={styles.headerLayout}>
           <Text style={styles.headerText}>ส่งเอกสาร</Text>
@@ -622,6 +624,7 @@ export class AssignDoc extends Component {
         /> */}
         <View style={styles.bottomFooter} />
       </View>
+      // </KeyboardAwareView>
     );
   }
 }
