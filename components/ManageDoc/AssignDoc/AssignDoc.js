@@ -492,8 +492,10 @@ export class AssignDoc extends Component {
     const {checkboxes} = this.state;
 
     return (
-      // <KeyboardAwareView style={styles.keyboardAvoidContainer} behavior="height">
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+      <KeyboardAwareView style={styles.keyboardAvoidContainer} behavior="height">
+        <ScrollView>
+      {/* <View  style={styles.container}> */}
         <View style={styles.headerLayout}>
           <Text style={styles.headerText}>ส่งเอกสาร</Text>
         </View>
@@ -623,8 +625,10 @@ export class AssignDoc extends Component {
           tabs={this.tabs}
         /> */}
         <View style={styles.bottomFooter} />
-      </View>
-      // </KeyboardAwareView>
+      {/* </View > */}
+      </ScrollView>
+      </KeyboardAwareView>
+      </SafeAreaView>
     );
   }
 }

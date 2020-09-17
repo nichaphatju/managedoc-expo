@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlignVertical: 'center',
     textAlign: 'center',
+    paddingTop: 40,
+    paddingBottom: 30,
   },
   subHeaderLayout: {
     flex: 0.9,
@@ -47,7 +49,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlignVertical: 'center',
     textAlign: 'center',
-    marginRight: 10
+    marginRight: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   contentLayout: {
     flex: 10,
@@ -155,6 +159,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 30,
   },
+  keyboardAvoidContainer: {
+    flex: 1,
+    // backgroundColor: 'orange'
+  }
 });
 
 export {styles};
