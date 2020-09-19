@@ -109,7 +109,7 @@ export class StatusDoc extends Component {
       });
       var currentStatus = valObj['status'];
       if(currentStatus == 'assign') currentStatus = '';
-      var editable = displayName == valObj['assignTo'];
+      var editable = displayName == valObj['assignTo'] && displayName != valObj['assignBy'];
       console.log(' that.state.currentUserName '+displayName);
       console.log(' assign to '+valObj['assignTo']);
       that.setState({recordData : valObj, status:currentStatus, editable : editable})
@@ -217,7 +217,7 @@ export class StatusDoc extends Component {
         <ScrollView  style={{flex:1}}>  
         <View style={styles.contentLayout}>
             <View style={styles.row}>
-              <Text style={styles.headLabelText}>ปรับปรุงสถานะเอกสาร</Text>
+              <Text style={styles.headLabelText}>{this.state.editable ? 'ปรับปรุงสถานะเอกสาร' : 'ดูสถานะเอกสาร'}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.labelText}>สถานะ :</Text>
