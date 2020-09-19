@@ -163,7 +163,9 @@ export default class Login extends Component {
       return <ActivityIndicator/>
     }else{
       return (
+        <SafeAreaView style={styles.container}>
         <KeyboardAwareView style={styles.keyboardAvoidContainer} behavior="height">
+        <ScrollView>
          {/* <ScrollView style={{flex:1}}>
          <KeyboardAwareView style={{flex:1,padding: 10,}} enableOnAndroid extraHeight={Platform.OS === "android" ? 10 : undefined}> */}
           <View style={styles.container}>
@@ -216,7 +218,9 @@ export default class Login extends Component {
             </View>
             <View style={styles.bottomFooter} />
           </View>
+          </ScrollView>
         </KeyboardAwareView>
+        </SafeAreaView>
         // </ScrollView>
       );
     }

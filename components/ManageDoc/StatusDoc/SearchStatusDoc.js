@@ -136,7 +136,7 @@ export class SearchStatusDocScreen extends Component {
             <TouchableOpacity
               style={liststyles.rowStyle}
               onPress={() => this.statusPage(doc.Id)}>
-              <Text style={liststyles.itemText}>{doc.assignTo}</Text>
+              <Text style={liststyles.itemText}>{this.state.currentUserName == doc.assignBy ? '(ส่ง) ถึง '+doc.assignTo : '(ได้รับ) จาก '+doc.assignBy}</Text>
               <Text style={liststyles.itemTextDetail}>{doc.updatedDate}</Text>
             </TouchableOpacity>
             {/* <Icon

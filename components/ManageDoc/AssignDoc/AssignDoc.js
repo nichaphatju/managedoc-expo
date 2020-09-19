@@ -132,6 +132,7 @@ export class AssignDoc extends Component {
     let that = this;
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    var displayEmail = userInfo.email;
     console.log(displayName)
     var isDirector = false;
     firebase.database().ref('users/'+ displayName).on('value', function(data) {
@@ -148,7 +149,7 @@ export class AssignDoc extends Component {
               console.log(index);
               console.log(fbObject[key])
               // fbObject[key]['username'] = key;
-              if(!isDirector || (isDirector && fbObject[key]['acceptFromDirector'] == 'true' || fbObject[key]['acceptFromDirector'])) newArr.push(fbObject[key]);
+              if(fbObject[key].username !== undefined && fbObject[key].username != null && (!isDirector || (isDirector && fbObject[key]['acceptFromDirector'] == 'true' || fbObject[key]['acceptFromDirector']))) newArr.push(fbObject[key]);
           });
         console.log(newArr)
         var defaultVal = newArr && newArr.length > 0 ? newArr[0].name : '';
@@ -426,7 +427,8 @@ export class AssignDoc extends Component {
     //   that.sendPushNotification(targetDeviceToken);
     // })
     var userInfo = firebase.auth().currentUser;
-    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    var displayEmail = userInfo.email;
+    var displayName = displayEmail.substring(0, displayEmail.indexOf('@'));
     var itemsRef = firebase.database().ref().child(`assignDoc`);
     let formValues = this.state.formValue;
     formValues.selectedType = this.state.selectedType;

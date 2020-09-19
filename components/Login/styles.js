@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontFamily: 'THSarabunNew Bold',
-    fontSize: 30,
+    fontSize: 28,
     color: '#ff6600',
   },
   imgLogo: {
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 0.7,
+    paddingBottom: 20
   },
   subHeader: {
     // paddingTop: 15,

@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlignVertical: 'center',
     textAlign: 'center',
-    paddingTop: 40,
-    paddingBottom: 30,
+    paddingTop: 30,
+    paddingBottom: 25,
   },
   subHeaderLayout: {
     flex: 0.9,

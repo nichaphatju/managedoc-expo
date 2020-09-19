@@ -112,7 +112,8 @@ class HomeScreen extends Component {
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     console.log(displayName)
     firebase.database().ref('users/' + displayName).update({
-      deviceToken : token
+      deviceToken : token,
+      username : userInfo.email
     });
   }
 

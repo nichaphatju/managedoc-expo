@@ -8,6 +8,9 @@ import auth from "firebase/auth";
 import firebase from 'firebase';
 import firebaseConfig from './config/firebase';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import * as Notifications from 'expo-notifications';
+// import { Notifications as Notifications2 } from 'expo';
+// import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -36,8 +39,16 @@ const styles = StyleSheet.create({
 
 const AppContainer = createAppContainer(AppNavigator);
 
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: true,
+//   }),
+// });
+
 export default class App extends React.Component {
-  state = {loggedIn: false};
+  state = {loggedIn: false,notification : {}};
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -48,7 +59,18 @@ export default class App extends React.Component {
         this.setState({loggedIn: false});
       }
     });
-  }
+    // Notifications.addNotificationReceivedListener(this._handleNotification);
+    
+    // Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);
+    }
+
+  // _handleNotification = notification => {
+  //   this.setState({ notification: notification });
+  //   };
+
+  // _handleNotificationResponse = response => {
+  //   console.log(response);
+  //   };
 
   render() {
     console.log(this.state)
