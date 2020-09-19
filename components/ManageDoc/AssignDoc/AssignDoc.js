@@ -149,7 +149,11 @@ export class AssignDoc extends Component {
               console.log(index);
               console.log(fbObject[key])
               // fbObject[key]['username'] = key;
-              if(fbObject[key].username !== undefined && fbObject[key].username != null && (!isDirector || (isDirector && fbObject[key]['acceptFromDirector'] == 'true' || fbObject[key]['acceptFromDirector']))) newArr.push(fbObject[key]);
+              if((fbObject[key].name !== undefined && fbObject[key].name != null &&
+                  fbObject[key].username !== undefined && fbObject[key].username != null) 
+                && (!isDirector || (isDirector && fbObject[key]['acceptFromDirector'] == 'true' || fbObject[key]['acceptFromDirector']))){
+                  newArr.push(fbObject[key]);
+                }
           });
         console.log(newArr)
         var defaultVal = newArr && newArr.length > 0 ? newArr[0].name : '';

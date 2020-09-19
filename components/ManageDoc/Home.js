@@ -35,6 +35,7 @@ import Constants from 'expo-constants';
 // import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import {Notifications} from 'expo';
+import renderIf from '../ManageDoc/renderIf';
 
 class HomeScreen extends Component {
   _isMounted = false;
@@ -44,6 +45,8 @@ class HomeScreen extends Component {
 
     this.state = {
         loading: true,
+        notifyNo : 0,
+        allUnreadNotificationKeys : []
     }
   }
 
@@ -54,9 +57,13 @@ class HomeScreen extends Component {
         'THSarabunNew Bold': require('../../assets/fonts/THSarabunNew_Bold.ttf')
     })
     if (this._isMounted) {
-      this.setState({ loading: false })
+      this.setState({ loading: false , notifyNo : 0 })
     }
     this.getPushNotificationPermissions();
+  }
+
+  async componentDidMount() {
+    this.getCountNotify();
   }
 
   componentWillUnmount() {
@@ -80,7 +87,7 @@ class HomeScreen extends Component {
 
   acceptPage = () => {
     console.log('acceptPage');
-    this.props.navigation.navigate('SearchAcceptDoc');
+    this.markAsRead();
   };
 
   statusPage = () => {
@@ -89,6 +96,7 @@ class HomeScreen extends Component {
   };
 
   getPushNotificationPermissions = async () => {
+    var that = this;
     console.log(' ### getPushNotificationPermissions ###')
     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     let finalStatus = existingStatus;
@@ -117,16 +125,62 @@ class HomeScreen extends Component {
     });
   }
 
+  getCountNotify = () => {
+    console.log('getCountNotify')
+    var that = this;
+    var userInfo = firebase.auth().currentUser;
+    var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
+    console.log('get Noti !! '+displayName)
+    firebase.database().ref('notifications').on('value', function(data) {
+      const dataVal = data.val();
+      console.log('unread msg')
+      console.log(dataVal)
+      var countNoti = 0;
+      var allKeys = [];
+      Object.keys(dataVal).map( (key,index)=>{
+        if(displayName == dataVal[key].to && dataVal[key].status == 'unread'){
+          countNoti += 1;
+          allKeys.push(key);
+        }
+      })
+      console.log('total countNoti :: '+countNoti)
+      console.log('all Keyss :: '+allKeys);
+      that.setState({ notifyNo: countNoti , allUnreadNotificationKeys : allKeys})
+      // that.state.notifyNo = countNoti;
+      // that.state.allUnreadNotificationKeys = allKeys;
+      console.log('noti >> '+that.state.notifyNo)
+    });
+  }
+
+  markAsRead = () => {
+    console.log('markAsRead')
+    console.log(this.state.allUnreadNotificationKeys)
+    var that = this;
+    // var countAllNoti = this.state.notifyNo;
+    var tmpNotiKeys = this.state.allUnreadNotificationKeys;
+    if(this.state.allUnreadNotificationKeys != null && this.state.allUnreadNotificationKeys !== undefined){
+      this.state.allUnreadNotificationKeys.forEach(ele => {
+        console.log('mark '+ele +' as read.')
+        firebase.database().ref('notifications/' + ele).update({
+          status : 'read'
+        });
+        // countAllNoti--;
+        tmpNotiKeys.splice(tmpNotiKeys.indexOf(ele),1);
+      })
+      this.setState({notifyNo : 0 , allUnreadNotificationKeys : tmpNotiKeys})
+    }
+    this.props.navigation.navigate('SearchAcceptDoc');
+  }
+
   render() {
     const {navigate} = this.props.navigation;
 
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     console.log(userInfo);
-    this.state = {
-      displayName: displayName,
+    this.state.displayName = displayName
       // uid: firebase.auth().currentUser.uid,
-    };
+    ;
     if (this.state.loading) {
       return <ActivityIndicator/>
     }else{
@@ -139,12 +193,19 @@ class HomeScreen extends Component {
             <View style={styles.contentCenter}>
               <View style={styles.lineHeader} />
             </View>
-            <Icon
-              name="email"
-              style={styles.headerText}
-              color="white"
-              onPress={() => this.acceptPage()}
-            />
+            {/* <Text style={styles.badge}>1</Text> */}
+            <View style={styles.notifyContent}>
+              {renderIf(this.state.notifyNo != null && this.state.notifyNo != undefined && this.state.notifyNo != '' && this.state.notifyNo > 0, 
+                  <Text style={styles.badge}
+                        onPress={() => this.acceptPage()}>{this.state.notifyNo}</Text>
+                  )}
+              <Icon
+                name="email"
+                style={styles.headerText}
+                color="white"
+                onPress={() => this.acceptPage()}
+              />
+            </View>
           </View>
           <View style={styles.headerLine} />
           <Text style={styles.menuHeaderText}>เลือกรายการที่คุณต้องการ</Text>

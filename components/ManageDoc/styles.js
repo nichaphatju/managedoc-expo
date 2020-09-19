@@ -126,6 +126,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
   },
+  notifyContent : {
+    alignItems: 'center',
+    textAlignVertical: 'center',
+    textAlign: 'center',
+  },
   lineHeader: {
     borderBottomColor: 'white',
     borderBottomWidth: 2,
@@ -165,6 +170,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  badge : {
+    top: 15,
+    right: -20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 50,
+    backgroundColor: 'red',
+    color: 'white',
+  }
 });
 
 export {styles};

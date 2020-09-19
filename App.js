@@ -59,6 +59,7 @@ export default class App extends React.Component {
         this.setState({loggedIn: false});
       }
     });
+    Notifications.setBadgeCountAsync(2);
     // Notifications.addNotificationReceivedListener(this._handleNotification);
     
     // Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);
