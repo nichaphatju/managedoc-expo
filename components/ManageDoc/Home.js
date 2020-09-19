@@ -121,7 +121,8 @@ class HomeScreen extends Component {
     console.log(displayName)
     firebase.database().ref('users/' + displayName).update({
       deviceToken : token,
-      username : userInfo.email
+      username : userInfo.email,
+      name: displayName
     });
   }
 
