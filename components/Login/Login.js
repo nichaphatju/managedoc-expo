@@ -120,14 +120,22 @@ export default class Login extends Component {
   };
 
   _onLogin = () => {
+    var that = this;
     // let id = this.props.id;
     if (this.state != null) {
       if(this.state.username !== undefined && this.state.password !== undefined){
         firebase.auth()
           .signInWithEmailAndPassword(this.state.username, this.state.password)
           .then(() => {
+            var userInfo = firebase.auth().currentUser;
+            var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
             console.log('User account created & signed in!');
-            this.props.navigation.navigate('Home');
+            firebase.database().ref('users/' + displayName).on('value', function(data) {
+              var currentName = data != null && data !== undefined && data.val() != null && data.val().name != null && data.val().name !== undefined && data.val().name != '' ? data.val().name : '';
+              that.props.navigation.navigate('Home',{
+                currentName: currentName,
+              });
+            });
           })
           .catch((error) => {
             console.log('login username ' + this.state.username + 'error');
@@ -140,7 +148,7 @@ export default class Login extends Component {
               this.renderAlertMsg('', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
             }
 
-            // console.error(error);
+            console.error(error);
           });
       }else{
         alert("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");

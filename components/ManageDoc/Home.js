@@ -63,6 +63,7 @@ class HomeScreen extends Component {
   }
 
   async componentDidMount() {
+    console.log('this.props.navigation.state.params.currentName '+this.props.navigation.state.params.currentName)
     this.getCountNotify();
   }
 
@@ -119,10 +120,11 @@ class HomeScreen extends Component {
     var userInfo = firebase.auth().currentUser;
     var displayName = userInfo.email.substring(0, userInfo.email.indexOf('@'));
     console.log(displayName)
+    // var currentName = this.props.navigation.state.params.currentName != '' ? this.props.navigation.state.params.currentName : displayName;
     firebase.database().ref('users/' + displayName).update({
       deviceToken : token,
       username : userInfo.email,
-      name: displayName
+      // name: currentName
     });
   }
 
