@@ -63,7 +63,7 @@ class HomeScreen extends Component {
   }
 
   async componentDidMount() {
-    console.log('this.props.navigation.state.params.currentName '+this.props.navigation.state.params.currentName)
+    // console.log('this.props.navigation.state.params.currentName '+this.props.navigation.state.params.currentName)
     this.getCountNotify();
   }
 

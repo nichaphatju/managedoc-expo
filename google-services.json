@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1068804986278",
+    "firebase_url": "https://managedocument-cc7fd.firebaseio.com",
+    "project_id": "managedocument-cc7fd",
+    "storage_bucket": "managedocument-cc7fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068804986278:android:50df0d9e368e1fcc302b67",
+        "android_client_info": {
+          "package_name": "com.managedocapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068804986278-621ehs0mg2h33n22gjmv5n0q23pim3eu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA862xM6VcLK66LZX_9u08famBpYiyjOVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068804986278-621ehs0mg2h33n22gjmv5n0q23pim3eu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
