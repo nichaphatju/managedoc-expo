@@ -163,8 +163,8 @@ export class AcceptDoc extends Component {
       if(oldrecord.docName != null && oldrecord.docName !== undefined && oldrecord.docName != '') docName = oldrecord.docName;
       firebase.database().ref('assignDoc/' + that.state.docKey).update({
         announceType : that.state.annouceType,
-        status: that.state.status,
-        comment: that.state.comment
+        status: that.state.status
+        //comment: that.state.comment
       });
       if(that.state.sendType != '' && that.state.sendTo != ''){
         var itemsRef = firebase.database().ref().child(`assignDoc`);
@@ -178,6 +178,7 @@ export class AcceptDoc extends Component {
         newDocRecord.attachment = oldrecord.attachment;
         newDocRecord.isSendFrom = true;
         newDocRecord.status = 'assign';
+        newDocRecord.comment = that.state.comment;
         console.log('newDocRecord ',newDocRecord)
         itemsRef.push(newDocRecord).then((snap) => {
           const key = snap.key 
@@ -284,6 +285,12 @@ export class AcceptDoc extends Component {
         </View>
         <ScrollView style={{flex:2.65,contentContainerStyle:'center'}}>
           <View style={{flex:1,justifyContent:'center'}}>
+          <View style={styles.rowComment}>
+            <Text style={styles.labelTextComment}>ความคิดเห็นจากผู้ส่ง :</Text>
+          </View>
+          <View style={styles.rowComment}>
+            <Text style={styles.labelTextComment}>{this.state.recordData.comment != null && this.state.recordData.comment != '' ? this.state.recordData.comment : '-'}</Text>
+          </View>
           <View style={styles.row}>
             <View style={styles.chkBoxContainerCol}>
               <View style={styles.chkBoxContainerRow}>

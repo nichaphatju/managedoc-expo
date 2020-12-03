@@ -56,6 +56,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     flexDirection: 'column',
   },
+  labelTextComment: {
+    flex: 10,
+    fontFamily: 'THSarabunNew Bold',
+    color: '#000',
+    fontSize: 28,
+    // textAlignVertical: 'center',
+  },
   labelText: {
     flex: 0.3,
     fontFamily: 'THSarabunNew Bold',
@@ -80,6 +87,14 @@ const styles = StyleSheet.create({
     height: 100,
     borderColor: 'gray', 
     borderWidth: 1
+  },
+  rowComment: {
+    flex: 0.1,
+    width: '100%',
+    marginHorizontal: 10,
+    // marginVertical: 10,
+    flexDirection: 'row',
+    textAlign: 'center',
   },
   row: {
     flex: 0.1,

@@ -89,6 +89,7 @@ export class StatusDoc extends Component {
       timeline.time = dt;
       timeline.title = valObj['selectedType'];
       timeline.description = 'ส่งถึง '+valObj['assignTo'];
+      if(valObj['comment'] != null && valObj['comment'] !== undefined && valObj['comment'] != '') timeline.description += ' | ความคิดเห็น '+ valObj['comment'];
       timeline.lineColor = '#D3D3D3';
       timeline.circleColor = that.getDotTimelineColor(valObj['status']);
       newHistories.push(timeline);
@@ -131,6 +132,7 @@ export class StatusDoc extends Component {
                 timeline.time = dt;
                 timeline.title = obj['selectedType'];
                 timeline.description = 'ส่งถึง '+obj['assignTo'];
+                if(obj['comment'] != null && obj['comment'] !== undefined && obj['comment'] != '') timeline.description += ' | ความคิดเห็น '+ obj['comment'];
                 timeline.lineColor = '#D3D3D3';
                 timeline.circleColor = that.getDotTimelineColor(obj['status']);
                 newArr.push(obj);
